@@ -173,8 +173,7 @@ public class VentanaDatos extends JFrame {
 				if (pathFoto != null) {
 					FotoDePerfil.setIcon(CrearIcono(pathFoto, 150, -1, true, true));
 					fotoDefecto.setVisible(true);
-				}
-				else {
+				} else {
 					pathFoto = preCambiado;
 				}
 			}
@@ -220,15 +219,13 @@ public class VentanaDatos extends JFrame {
 
 		ponerDefecto = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
-	        	if (Sexo.getSelectedItem().toString() == "Femenino") {
-	        		pathFoto = pathFotoDefectoMujer;
-	        	}
-	        	else if (Sexo.getSelectedItem().toString() == "Masculino") {
-	        		pathFoto = pathFotoDefectoHombre;
-	        	}
-	        	else {
-	        		pathFoto = pathFotoDefecto;
-	        	}
+				if (Sexo.getSelectedItem().toString() == "Femenino") {
+					pathFoto = pathFotoDefectoMujer;
+				} else if (Sexo.getSelectedItem().toString() == "Masculino") {
+					pathFoto = pathFotoDefectoHombre;
+				} else {
+					pathFoto = pathFotoDefecto;
+				}
 				fotoDefecto.setIcon(CrearIcono(posicion_archivos + "/ponerDefecto.png", 20, 20, true, false));
 				FotoDePerfil.setIcon(CrearIcono(pathFoto, 150, -1, true, true));
 				fotoDefecto.setVisible(false);
@@ -344,7 +341,7 @@ public class VentanaDatos extends JFrame {
 		CambioNombre.setColumns(10);
 		CambioNombre.setLayout(new BorderLayout());
 		CambioNombre.add(AlertaEntry1, BorderLayout.EAST);
-		
+
 		CambioNombre.setDocument(new LimiteTexto(30));
 		CambioNombre.getDocument().putProperty("alerta", AlertaEntry1);
 		CambioNombre.getDocument().putProperty("padre", CambioNombre);
@@ -379,32 +376,30 @@ public class VentanaDatos extends JFrame {
 		getContentPane().add(lblSexo);
 
 		Sexo = new JComboBox < String > ();
-		Sexo.setFocusable(false);	
-		
+		Sexo.setFocusable(false);
+
 		Sexo.setForeground(Color.BLACK);
 		Sexo.setBackground(Color.WHITE);
 
 		Sexo.addItem("Sin especificar");
 		Sexo.addItem("Masculino");
 		Sexo.addItem("Femenino");
-		
-		Sexo.addActionListener (new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		        String nuevoSexo = Sexo.getSelectedItem().toString();
-		        boolean imagenCambiada = (pathFoto != pathFotoDefecto && pathFoto != pathFotoDefectoHombre && pathFoto != pathFotoDefectoMujer);
-		        if (!imagenCambiada) {
-		        	if (nuevoSexo == "Femenino") {
-		        		pathFoto = pathFotoDefectoMujer;
-		        	}
-		        	else if (nuevoSexo == "Masculino") {
-		        		pathFoto = pathFotoDefectoHombre;
-		        	}
-		        	else {
-		        		pathFoto = pathFotoDefecto;
-		        	}
-	        		FotoDePerfil.setIcon(CrearIcono(pathFoto, 150, -1, true, false));
-		        }
-		    }
+
+		Sexo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String nuevoSexo = Sexo.getSelectedItem().toString();
+				boolean imagenCambiada = (pathFoto != pathFotoDefecto && pathFoto != pathFotoDefectoHombre && pathFoto != pathFotoDefectoMujer);
+				if (!imagenCambiada) {
+					if (nuevoSexo == "Femenino") {
+						pathFoto = pathFotoDefectoMujer;
+					} else if (nuevoSexo == "Masculino") {
+						pathFoto = pathFotoDefectoHombre;
+					} else {
+						pathFoto = pathFotoDefecto;
+					}
+					FotoDePerfil.setIcon(CrearIcono(pathFoto, 150, -1, true, false));
+				}
+			}
 		});
 
 
@@ -466,9 +461,8 @@ public class VentanaDatos extends JFrame {
 			}
 		});
 		t1.start();
-		
-		Timer todoLleno = new Timer(100, new ActionListener() {
-			@Override
+
+		Timer todoLleno = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible());
@@ -476,7 +470,7 @@ public class VentanaDatos extends JFrame {
 			}
 		});
 		todoLleno.start();
-		
+
 	}
 
 	public ImageIcon CrearIcono(String path, int l, int a, boolean redimensionar, boolean busy) {
@@ -502,8 +496,8 @@ public class VentanaDatos extends JFrame {
 		PanelPrevisualizacion preview = new PanelPrevisualizacion(chooser);
 		chooser.setDialogTitle("Seleccione una imagen");
 
-        String[] extensiones = ImageIO.getWriterFormatNames();
-        extensiones = (String []) unique(extensiones);
+		String[] extensiones = ImageIO.getWriterFormatNames();
+		extensiones = (String[]) unique(extensiones);
 		FileFilter filtroImagen = new FileNameExtensionFilter(
 			"Imágenes", extensiones);
 
@@ -560,7 +554,7 @@ public class VentanaDatos extends JFrame {
 		ResultSet rs = stmt.executeQuery(sentencia);
 		rs.next();
 
-		
+
 		System.out.println("Datos:");
 		String nombre = rs.getString(1);
 		String apellido = rs.getString(2);
@@ -593,7 +587,7 @@ public class VentanaDatos extends JFrame {
 		posibles[1] = "Masculino";
 		posibles[2] = "Femenino";
 		int pos;
-		for (pos=0; pos<3; pos++) {
+		for (pos = 0; pos < 3; pos++) {
 			if (posibles[pos].equals(sexo)) {
 				break;
 			}
@@ -602,14 +596,14 @@ public class VentanaDatos extends JFrame {
 	}
 
 	public static String[] unique(String[] strings) {
-        Set<String> set = new HashSet<String>();
-        for (int i=0; i<strings.length; i++) {
-            String name = strings[i].toLowerCase();
-            if (name.contains("gif")) {
-            	continue;
-            }
-            set.add(name);
-        }
-        return (String[])set.toArray(new String[0]);
-    }
+		Set < String > set = new HashSet < String > ();
+		for (int i = 0; i < strings.length; i++) {
+			String name = strings[i].toLowerCase();
+			if (name.contains("gif")) {
+				continue;
+			}
+			set.add(name);
+		}
+		return (String[]) set.toArray(new String[0]);
+	}
 }

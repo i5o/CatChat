@@ -330,37 +330,33 @@ public class VentanaLogin extends JFrame {
 		getContentPane().add(lblNewLabel_3);
 
 		llamarAtencionAlertaEntry.start();
-		Timer datosEntradaLlenos = new Timer(100, new ActionListener() {
-			@Override
+		Timer datosEntradaLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible());
 				Entrar.setEnabled(completo);
 				if (!completo) {
 					Entrar.setToolTipText("<html><center style='font-family: Nyala; font-size: 12px; color: blaack;'>Ingrese los datos requeridos<br>para iniciar sesión</center></html>");
-				}
-				else {
+				} else {
 					Entrar.setToolTipText(null);
 				}
 			}
 		});
 		datosEntradaLlenos.start();
-		Timer datosRegistroLlenos = new Timer(100, new ActionListener() {
-			@Override
+		Timer datosRegistroLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
-				completo = (!AlertaEntry3.isVisible() && !AlertaEntry4.isVisible()&& !AlertaEntry5.isVisible());
+				completo = (!AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && !AlertaEntry5.isVisible());
 				Registrarse.setEnabled(completo);
 				if (!completo) {
 					Registrarse.setToolTipText("<html><center style='font-family: Nyala; font-size: 12px; color: blaack;'>Ingrese los datos requeridos<br>para registrarse</center></html>");
-				}
-				else {
+				} else {
 					Registrarse.setToolTipText(null);
 				}
 			}
 		});
-		datosRegistroLlenos.start();		
-		
+		datosRegistroLlenos.start();
+
 	}
 	public ImageIcon CrearIcono(String path, int l, int a, boolean redimensionar) {
 

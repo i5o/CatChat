@@ -15,17 +15,17 @@ public class SoloEnteros extends PlainDocument {
 		this.cifras = cifras;
 	}
 
-	public void insertString( int offset, String  str, AttributeSet attr ) throws BadLocationException {
+	public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
 		if (str == null) return;
 		if (!((getLength() + str.length()) <= cifras)) {
-	    	Toolkit.getDefaultToolkit().beep();
+			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-	    try {
-	    	Integer.parseInt(str);
-	    	super.insertString(offset, str, attr);
-	    } catch (NumberFormatException nfe) {
-	    	Toolkit.getDefaultToolkit().beep();
-	    	}
+		try {
+			Integer.parseInt(str);
+			super.insertString(offset, str, attr);
+		} catch (NumberFormatException nfe) {
+			Toolkit.getDefaultToolkit().beep();
 		}
- }
+	}
+}

@@ -66,7 +66,8 @@ public class CatChat {
 								} catch (SQLException | IOException e) {
 									e.printStackTrace();
 								}
-							}});
+							}
+						});
 					}
 
 				} catch (SQLException | IOException e) {
@@ -79,8 +80,7 @@ public class CatChat {
 			}
 		});
 
-		llamarAtencion = new Timer(500, new ActionListener() {
-			@Override
+		llamarAtencion = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				int rojo = colorLabel.getRed();
 				if (rojo == 239) {
@@ -107,7 +107,8 @@ public class CatChat {
 							} catch (SQLException | IOException e) {
 								e.printStackTrace();
 							}
-						}});
+						}
+					});
 				} catch (SQLException e) {
 					String error = e.toString();
 					System.out.println(error);
@@ -119,7 +120,7 @@ public class CatChat {
 			}
 		});
 	}
-	
+
 	public static void EstablecerConexionMySql() throws SQLException {
 		String url = "jdbc:mysql://kuckuck.treehouse.su:3306/proyecto?user=ignacioutu&password=ProyectoDeUTU2015";
 
@@ -170,19 +171,19 @@ public class CatChat {
 		resultados.next();
 		resultados.getString(1);
 	}
-	
+
 	public static void GuardarDatos(VentanaDatos ventana) throws SQLException, IOException {
 		String sentencia;
 		sentencia = "UPDATE `usuario` SET `sexo`=?, `edad`=?, `Nombre`=?, `Apellido`=?, `Ciudad`=?, `foto`=?, `extImagen`=? WHERE `usuario`=?";
-        PreparedStatement psmnt = null;
+		PreparedStatement psmnt = null;
 
-        String extension = "";
-        String imagen = ventana.pathFoto;
-        int i = imagen.lastIndexOf(".");
-        if (i >= 0) {
-        	extension = imagen.substring(i);
-        }
-        psmnt = conexion.prepareStatement(sentencia);
+		String extension = "";
+		String imagen = ventana.pathFoto;
+		int i = imagen.lastIndexOf(".");
+		if (i >= 0) {
+			extension = imagen.substring(i);
+		}
+		psmnt = conexion.prepareStatement(sentencia);
 
 		psmnt.setString(1, ventana.Sexo.getSelectedItem().toString());
 		psmnt.setInt(2, Integer.parseInt(ventana.CambioEdad.getText()));
@@ -191,7 +192,7 @@ public class CatChat {
 		psmnt.setString(5, ventana.CambioCiudad.getText());
 		psmnt.setString(7, extension);
 		psmnt.setString(8, usuario);
-				
+
 		FileInputStream fin = new FileInputStream(imagen);
 		psmnt.setBinaryStream(6, fin, fin.available());
 
