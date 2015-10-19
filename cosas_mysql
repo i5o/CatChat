@@ -1,0 +1,5 @@
+iniciar: systemctl start mariadb.service
+contra: ignacio
+
+en kuckuck:
+kuckuckrocks

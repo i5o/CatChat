@@ -1,0 +1,10 @@
+{
+"cmd": ["javac", "-classpath", "$file_path/librerias/*", "$file"],
+
+"variants": [
+    {
+        "cmd": ["java", "-cp", ".:$file_path/librerias/*", "$file_base_name"],
+        "name": "Correr"
+    }
+    ]
+}

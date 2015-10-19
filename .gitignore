@@ -1,0 +1,4 @@
+pruebas\$*
+*.db
+*.class
+proyecto-final/bin/ProyectoCatChat/VentanaLogin.class
