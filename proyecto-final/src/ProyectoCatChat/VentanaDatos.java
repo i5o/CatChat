@@ -108,7 +108,9 @@ public class VentanaDatos extends JFrame {
 	String iconoAlertaEntry_path;
 	private boolean obteniendoFoto = false;
 	private boolean cargandoDatos = false;
-	private boolean cargandoDatosIcon = false;
+	private boolean ManejandoDatos = false;
+	private boolean guardandoDatos = false;
+
 	File chooserPath = new File(System.getProperty("user.home"));
 
 	/**
@@ -288,7 +290,8 @@ public class VentanaDatos extends JFrame {
 				return new Point(25, 2);
 			}
 		};
-		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
+		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (iconoAlertaEntry_path.endsWith("AlertaEntry.png")) {
 					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry_.png";
@@ -297,11 +300,20 @@ public class VentanaDatos extends JFrame {
 				}
 
 				String iconoFinal = iconoAlertaEntry_path;
-				if (cargandoDatos) {
-					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
-					AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
-					AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
-					AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
+				if (cargandoDatos || guardandoDatos) {
+					String palabra;
+					if (cargandoDatos) {
+						palabra = "Cargando";
+					}
+					else {
+						palabra = "Guardando";
+					}
+					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry5.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
+
 					iconoFinal = posicion_archivos + "ajax-loader.gif";
 				}
 				else {
@@ -311,7 +323,7 @@ public class VentanaDatos extends JFrame {
 					AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una edad (entera)</font></p></html>");
 				}
 				iconoAlertaEntry = CrearIcono(iconoFinal, 20, 20, true, false);
-				if (cargandoDatos && cargandoDatosIcon) {
+				if (ManejandoDatos) {
 					return;
 				}
 				AlertaEntry1.setIcon(iconoAlertaEntry);
@@ -319,7 +331,9 @@ public class VentanaDatos extends JFrame {
 				AlertaEntry3.setIcon(iconoAlertaEntry);
 				AlertaEntry4.setIcon(iconoAlertaEntry);
 				AlertaEntry5.setIcon(iconoAlertaEntry);
-				cargandoDatosIcon = true;
+				if (cargandoDatos || guardandoDatos) {
+					ManejandoDatos = true;
+				}
 			}
 		});
 
@@ -520,6 +534,27 @@ public class VentanaDatos extends JFrame {
 			}
 		});
 		todoLleno.start();
+		
+		Siguiente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				guardandoDatos = true;
+				ManejandoDatos = false;
+				chequearAlertas.stop();
+				Siguiente.setEnabled(false);
+				fotoDefecto.setVisible(false);
+				AlertaEntry1.setVisible(true);
+				AlertaEntry2.setVisible(true);
+				AlertaEntry3.setVisible(true);
+				AlertaEntry4.setVisible(true);
+				AlertaEntry5.setVisible(true);
+				CambiarFoto.setEnabled(false);
+				CambioNombre.setEnabled(false);
+				CambioCiudad.setEnabled(false);
+				CambioApellido.setEnabled(false);
+				CambioEdad.setEnabled(false);
+				Sexo.setEnabled(false);
+			}
+		});
 	}
 
 	public ImageIcon CrearIcono(String path, int l, int a, boolean redimensionar, boolean busy) {

@@ -20,7 +20,6 @@ import javax.swing.Timer;
 
 public class CatChat {
 
-	static String sentencia = null;
 	static Statement stmt = null;
 	static String posicion_archivos = new File("archivos/").getAbsolutePath() + "\\";
 	static Connection conexion = null;
@@ -101,7 +100,7 @@ public class CatChat {
 	}
 
 	public static void Registro() throws SQLException, IOException {
-		sentencia = "INSERT INTO `usuario` (`usuario`, `contraseña`, `email`) VALUES (?, ?, ?);";
+		String sentencia = "INSERT INTO `usuario` (`usuario`, `contraseña`, `email`) VALUES (?, ?, ?);";
 		PreparedStatement psmnt = null;
 		String nuevoEmail = ventanaInicial.nuevoEmail.getText();
 		String nuevoPassword = ventanaInicial.nuevoPassword.getText();
@@ -131,7 +130,7 @@ public class CatChat {
 	}
 
 	public static boolean Login() throws SQLException {
-		sentencia = "select usuario,contraseña from `usuario` where `usuario`=? and `contraseña`=?";
+		String sentencia = "select usuario,contraseña from `usuario` where `usuario`=? and `contraseña`=?";
 		String user = ventanaInicial.EntrarUsuario.getText();
 		String password = ventanaInicial.EntrarPassword.getText();
 		PreparedStatement psmnt = null;
@@ -153,7 +152,7 @@ public class CatChat {
 	}
 
 	public static void GuardarDatos(VentanaDatos ventana) throws SQLException, IOException {
-		sentencia = "UPDATE `usuario` SET `sexo`=?, `edad`=?, `Nombre`=?, `Apellido`=?, `Ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
+		String sentencia = "UPDATE `usuario` SET `sexo`=?, `edad`=?, `Nombre`=?, `Apellido`=?, `Ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
 		PreparedStatement psmnt = null;
 
 		String extension = "";
@@ -180,7 +179,7 @@ public class CatChat {
 	}
 	
 	public static boolean CampoVacio(String campo, String valor) throws SQLException {
-		sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
+		String sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
 		ResultSet rs = stmt.executeQuery(sentencia);
 		return consultaVacia(rs);
 	}
@@ -191,24 +190,34 @@ public class CatChat {
 	}
 	
 	public static void llamarVentanaSecundaria() {
+		ventanaInicial.llamarAtencionAlertaEntry.stop();
+		ventanaInicial.datosEntradaLlenos.stop();
+		ventanaInicial.datosRegistroLlenos.stop();
+		ventanaInicial.llamarAtencionInfo.stop();
 		ventanaInicial.setVisible(false);
 		VentanaDatos ventanaSecundaria = new VentanaDatos(Usuario, conexion, stmt, true);
 		ventanaSecundaria.setVisible(true);
 
 		ventanaSecundaria.Siguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					GuardarDatos(ventanaSecundaria);
-				} catch (SQLException | IOException e) {
-					e.printStackTrace();
-				}
+				Thread t1 = new Thread(new Runnable() {
+					public void run() {
+						try {
+							GuardarDatos(ventanaSecundaria);
+							ventanaSecundaria.dispose();
+						} catch (SQLException | IOException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				t1.start();
 			}
 		});
 	}
 	
 	public static boolean DebeLlenarDatos() {
 		boolean debe = false;
-		sentencia = "select registroCompleto from usuario where usuario='" + Usuario + "';";
+		String sentencia = "select registroCompleto from usuario where usuario='" + Usuario + "';";
 		try {
 			ResultSet rs = stmt.executeQuery(sentencia);
 			rs.next();

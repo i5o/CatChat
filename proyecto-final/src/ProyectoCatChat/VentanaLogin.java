@@ -47,6 +47,8 @@ public class VentanaLogin extends JFrame {
 	DocumentListener chequearTexto;
 	public JLabel EmailEnUso, UsuarioEnUso;
 	Color colorLabel = Color.decode("#EF6161");
+	
+	public Timer llamarAtencionAlertaEntry, datosEntradaLlenos, datosRegistroLlenos, llamarAtencionInfo;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -125,7 +127,7 @@ public class VentanaLogin extends JFrame {
 		AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una contraseña</font></p></html>");
 		AlertaEntry5.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un correo electrónico</font></p></html>");
 
-		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
+		llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				if (iconoAlertaEntry_path.endsWith("AlertaEntry.png")) {
 					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry_.png";
@@ -141,7 +143,7 @@ public class VentanaLogin extends JFrame {
 			}
 		});
 
-		Timer llamarAtencionInfo = new Timer(500, new ActionListener() {@Override
+		llamarAtencionInfo = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				int rojo = colorLabel.getRed();
 				if (rojo == 239) {
@@ -358,11 +360,6 @@ public class VentanaLogin extends JFrame {
 		datosIncorrectos.setVisible(false);
 		getContentPane().add(datosIncorrectos);
 
-		lblNewLabel_3 = new JLabel();
-		lblNewLabel_3.setIcon(new ImageIcon(posicion_archivos + "Fondo.jpg"));
-		lblNewLabel_3.setBounds(45, 529, 1280, 720);
-		getContentPane().add(lblNewLabel_3);
-		
 		UsuarioEnUso = new JLabel("El usuario ya existe");
 		UsuarioEnUso.setForeground(Color.decode("#EF6161"));
 		UsuarioEnUso.setFont(fuente_entry);
@@ -377,7 +374,13 @@ public class VentanaLogin extends JFrame {
 		EmailEnUso.setVisible(false);
 		getContentPane().add(EmailEnUso);
 
-		Timer datosEntradaLlenos = new Timer(100, new ActionListener() {@Override
+		
+		lblNewLabel_3 = new JLabel();
+		lblNewLabel_3.setIcon(new ImageIcon(posicion_archivos + "Fondo.jpg"));
+		lblNewLabel_3.setBounds(0, 0, 1280, 720);
+		getContentPane().add(lblNewLabel_3);
+		
+		datosEntradaLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible());
@@ -391,7 +394,7 @@ public class VentanaLogin extends JFrame {
 		});
 
 		
-		Timer datosRegistroLlenos = new Timer(100, new ActionListener() {@Override
+		datosRegistroLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && !AlertaEntry5.isVisible());
