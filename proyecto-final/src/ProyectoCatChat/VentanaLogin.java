@@ -47,7 +47,7 @@ public class VentanaLogin extends JFrame {
 	DocumentListener chequearTexto;
 	public JLabel EmailEnUso, UsuarioEnUso;
 	Color colorLabel = Color.decode("#EF6161");
-	
+
 	public Timer llamarAtencionAlertaEntry, datosEntradaLlenos, datosRegistroLlenos, llamarAtencionInfo;
 
 	public static void main(String[] args) {
@@ -156,7 +156,7 @@ public class VentanaLogin extends JFrame {
 				UsuarioEnUso.setForeground(colorLabel);
 			}
 		});
-		
+
 		chequearTexto = new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				ocultarIcono(e);
@@ -179,11 +179,11 @@ public class VentanaLogin extends JFrame {
 				if (alerta == AlertaEntry1 || alerta == AlertaEntry2) {
 					datosIncorrectos.setVisible(false);
 				}
-				
+
 				if (alerta == AlertaEntry3) {
 					UsuarioEnUso.setVisible(false);
 				}
-				
+
 				if (alerta == AlertaEntry5) {
 					EmailEnUso.setVisible(false);
 				}
@@ -206,12 +206,12 @@ public class VentanaLogin extends JFrame {
 		Placeholder txtEntrarUsuario_pl = new Placeholder("Usuario", EntrarUsuario, true);
 		EntrarUsuario.add(AlertaEntry1, BorderLayout.EAST);
 		txtEntrarUsuario_pl.changeAlpha(0.4f);
-		EntrarUsuario.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-            	Entrar.doClick();
-            }}
-		);
-		
+		EntrarUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Entrar.doClick();
+			}
+		});
+
 		//Etiqueta para contraseña de usuarios
 		EntrarPassword = new JPasswordField();
 		EntrarPassword.setBounds(835, 165, 200, 30);
@@ -225,11 +225,11 @@ public class VentanaLogin extends JFrame {
 		Placeholder pwdContrasea_pl = new Placeholder("Contraseña", EntrarPassword, true);
 		EntrarPassword.add(AlertaEntry2, BorderLayout.EAST);
 		pwdContrasea_pl.changeAlpha(0.4f);
-		EntrarPassword.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-            	Entrar.doClick();
-            }}
-		);
+		EntrarPassword.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Entrar.doClick();
+			}
+		});
 
 		//Botón para entrar
 		Entrar = new JButton("Entrar") {
@@ -276,11 +276,11 @@ public class VentanaLogin extends JFrame {
 		Placeholder txtNuevoUsuario_pl = new Placeholder("Nuevo usuario", nuevoUsuario, false);
 		nuevoUsuario.add(AlertaEntry3, BorderLayout.EAST);
 		txtNuevoUsuario_pl.changeAlpha(0.4f);
-		nuevoUsuario.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-            	Registrarse.doClick();
-            }}
-		);
+		nuevoUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Registrarse.doClick();
+			}
+		});
 
 		//Etiqueta contraseña
 		nuevoPassword = new JPasswordField();
@@ -296,11 +296,11 @@ public class VentanaLogin extends JFrame {
 		Placeholder pwdNuevaContrasea_pl = new Placeholder("Contraseña", nuevoPassword, false);
 		nuevoPassword.add(AlertaEntry4, BorderLayout.EAST);
 		pwdNuevaContrasea_pl.changeAlpha(0.4f);
-		nuevoPassword.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-            	Registrarse.doClick();
-            }}
-		);
+		nuevoPassword.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Registrarse.doClick();
+			}
+		});
 
 		//Etiqueta correo electrÃ³nico
 		nuevoEmail = new JTextField();
@@ -317,11 +317,11 @@ public class VentanaLogin extends JFrame {
 		Placeholder txtCorreoElectrnico_pl = new Placeholder("Correo electrónico", nuevoEmail, false);
 		nuevoEmail.add(AlertaEntry5, BorderLayout.EAST);
 		txtCorreoElectrnico_pl.changeAlpha(0.4f);
-		nuevoEmail.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-            	Registrarse.doClick();
-            }}
-		);
+		nuevoEmail.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Registrarse.doClick();
+			}
+		});
 
 		//Botón registrarse
 		Registrarse = new JButton("Registrarse") {
@@ -366,7 +366,7 @@ public class VentanaLogin extends JFrame {
 		UsuarioEnUso.setBounds(701, 375, 200, 35);
 		UsuarioEnUso.setVisible(false);
 		getContentPane().add(UsuarioEnUso);
-		
+
 		EmailEnUso = new JLabel("Ya existe una cuenta con ese correo electrónico");
 		EmailEnUso.setForeground(new Color(239, 97, 97));
 		EmailEnUso.setFont(new Font("Nyala", Font.PLAIN, 25));
@@ -374,12 +374,12 @@ public class VentanaLogin extends JFrame {
 		EmailEnUso.setVisible(false);
 		getContentPane().add(EmailEnUso);
 
-		
+
 		lblNewLabel_3 = new JLabel();
 		lblNewLabel_3.setIcon(new ImageIcon(posicion_archivos + "Fondo.jpg"));
 		lblNewLabel_3.setBounds(0, 0, 1280, 720);
 		getContentPane().add(lblNewLabel_3);
-		
+
 		datosEntradaLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
@@ -393,7 +393,7 @@ public class VentanaLogin extends JFrame {
 			}
 		});
 
-		
+
 		datosRegistroLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;

@@ -222,8 +222,7 @@ public class VentanaDatos extends JFrame {
 		fotoDefecto.setIcon(CrearIcono(posicion_archivos + "/ponerDefecto.png", 20, 20, true, false));
 		fotoDefecto.setContentAreaFilled(false);
 
-		ponerDefecto = new Timer(100, new ActionListener() {
-			@Override
+		ponerDefecto = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				if (Sexo.getSelectedItem().toString() == "Femenino") {
 					pathFoto = pathFotoDefectoMujer;
@@ -290,8 +289,7 @@ public class VentanaDatos extends JFrame {
 				return new Point(25, 2);
 			}
 		};
-		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {
-			@Override
+		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				if (iconoAlertaEntry_path.endsWith("AlertaEntry.png")) {
 					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry_.png";
@@ -304,8 +302,7 @@ public class VentanaDatos extends JFrame {
 					String palabra;
 					if (cargandoDatos) {
 						palabra = "Cargando";
-					}
-					else {
+					} else {
 						palabra = "Guardando";
 					}
 					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
@@ -315,8 +312,7 @@ public class VentanaDatos extends JFrame {
 					AlertaEntry5.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
 
 					iconoFinal = posicion_archivos + "ajax-loader.gif";
-				}
-				else {
+				} else {
 					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un nombre</font></p></html>");
 					AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un apellido</font></p></html>");
 					AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una ciudad</font></p></html>");
@@ -401,7 +397,7 @@ public class VentanaDatos extends JFrame {
 
 		Sexo.setBounds(780, 400, 200, 30);
 		getContentPane().add(Sexo);
-		
+
 		AlertaEntry5 = new JLabel((Icon) null) {
 			private static final long serialVersionUID = 1L;
 
@@ -440,39 +436,34 @@ public class VentanaDatos extends JFrame {
 
 		llamarAtencionAlertaEntry.start();
 
-		Timer chequearAlertas = new Timer(200, new ActionListener() {
-			@Override
+		Timer chequearAlertas = new Timer(200, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				if (CambioNombre.getText().isEmpty()) {
 					AlertaEntry1.setVisible(true);
-				}
-				else {
+				} else {
 					AlertaEntry1.setVisible(false);
 				}
 
 				if (CambioApellido.getText().isEmpty()) {
 					AlertaEntry2.setVisible(true);
-				}
-				else {
+				} else {
 					AlertaEntry2.setVisible(false);
 				}
 
 				if (CambioEdad.getText().isEmpty()) {
 					AlertaEntry4.setVisible(true);
-				}
-				else {
+				} else {
 					AlertaEntry4.setVisible(false);
 				}
 
 				if (CambioCiudad.getText().isEmpty()) {
 					AlertaEntry3.setVisible(true);
-				}
-				else {
+				} else {
 					AlertaEntry3.setVisible(false);
 				}
 			}
 		});
-		
+
 		// Obtener datos desde la base de datos.
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
@@ -503,8 +494,7 @@ public class VentanaDatos extends JFrame {
 					antesLoader = pathFoto;
 				} catch (NullPointerException | SQLException | IOException e) {
 					System.out.println("No hay foto aún.");
-				}
-				finally {
+				} finally {
 					obteniendoFoto = false;
 					cargandoDatos = false;
 				}
@@ -525,8 +515,7 @@ public class VentanaDatos extends JFrame {
 		});
 		t1.start();
 
-		Timer todoLleno = new Timer(100, new ActionListener() {
-			@Override
+		Timer todoLleno = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos));
@@ -534,7 +523,7 @@ public class VentanaDatos extends JFrame {
 			}
 		});
 		todoLleno.start();
-		
+
 		Siguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				guardandoDatos = true;

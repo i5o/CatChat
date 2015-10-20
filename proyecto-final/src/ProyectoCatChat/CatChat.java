@@ -66,8 +66,7 @@ public class CatChat {
 					if (Login()) {
 						if (DebeLlenarDatos()) {
 							llamarVentanaSecundaria();
-						}
-						else {
+						} else {
 							System.out.println("Aún no implementado, mensajes 3:");
 						}
 					}
@@ -115,7 +114,7 @@ public class CatChat {
 			algoUsado = true;
 			ventanaInicial.UsuarioEnUso.setVisible(true);
 		}
-		
+
 		if (algoUsado) {
 			return;
 		}
@@ -134,14 +133,14 @@ public class CatChat {
 		String user = ventanaInicial.EntrarUsuario.getText();
 		String password = ventanaInicial.EntrarPassword.getText();
 		PreparedStatement psmnt = null;
-		
+
 		psmnt = conexion.prepareStatement(sentencia);
 		psmnt.setString(1, user);
 		psmnt.setString(2, password);
 
 		Usuario = user;
 		ResultSet resultados = psmnt.executeQuery();
-		
+
 		if (consultaVacia(resultados)) {
 			ventanaInicial.datosIncorrectos.setVisible(true);
 			return false;
@@ -177,7 +176,7 @@ public class CatChat {
 
 		psmnt.executeUpdate();
 	}
-	
+
 	public static boolean CampoVacio(String campo, String valor) throws SQLException {
 		String sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
 		ResultSet rs = stmt.executeQuery(sentencia);
@@ -186,9 +185,9 @@ public class CatChat {
 
 	public static boolean consultaVacia(ResultSet rs) throws SQLException {
 		// Devuelve True si la consulta hecha no tiene campos
-	    return (!rs.isBeforeFirst() && rs.getRow() == 0);
+		return (!rs.isBeforeFirst() && rs.getRow() == 0);
 	}
-	
+
 	public static void llamarVentanaSecundaria() {
 		ventanaInicial.llamarAtencionAlertaEntry.stop();
 		ventanaInicial.datosEntradaLlenos.stop();
@@ -214,7 +213,7 @@ public class CatChat {
 			}
 		});
 	}
-	
+
 	public static boolean DebeLlenarDatos() {
 		boolean debe = false;
 		String sentencia = "select registroCompleto from usuario where usuario='" + Usuario + "';";
@@ -223,8 +222,7 @@ public class CatChat {
 			rs.next();
 			if (rs.getString(1).equals("1")) {
 				debe = false;
-			}
-			else {
+			} else {
 				debe = true;
 			}
 		} catch (SQLException e) {
