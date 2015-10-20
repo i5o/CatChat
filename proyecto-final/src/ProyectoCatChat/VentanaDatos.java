@@ -45,6 +45,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
+import javax.swing.Icon;
 
 public class VentanaDatos extends JFrame {
 
@@ -102,10 +103,12 @@ public class VentanaDatos extends JFrame {
 	private static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
 	private static FileOutputStream fos;
-	private JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4;
+	private JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5;
 	private static ImageIcon iconoAlertaEntry;
 	String iconoAlertaEntry_path;
-	private boolean Editando = false;
+	private boolean obteniendoFoto = false;
+	private boolean cargandoDatos = false;
+	private boolean cargandoDatosIcon = false;
 	File chooserPath = new File(System.getProperty("user.home"));
 
 	/**
@@ -125,7 +128,7 @@ public class VentanaDatos extends JFrame {
 	}
 
 	public VentanaDatos(String idUsuario_, Connection conexion_, Statement stmt_, boolean Editando_) {
-		Editando = Editando_;
+
 		getContentPane().setBackground(new Color(30, 144, 255));
 		idUsuario = idUsuario_;
 		conexion = conexion_;
@@ -217,7 +220,8 @@ public class VentanaDatos extends JFrame {
 		fotoDefecto.setIcon(CrearIcono(posicion_archivos + "/ponerDefecto.png", 20, 20, true, false));
 		fotoDefecto.setContentAreaFilled(false);
 
-		ponerDefecto = new Timer(100, new ActionListener() {@Override
+		ponerDefecto = new Timer(100, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (Sexo.getSelectedItem().toString() == "Femenino") {
 					pathFoto = pathFotoDefectoMujer;
@@ -266,7 +270,6 @@ public class VentanaDatos extends JFrame {
 				return new Point(25, 2);
 			}
 		};
-
 		AlertaEntry2 = new JLabel(iconoAlertaEntry) {
 			private static final long serialVersionUID = 1L;
 			public Point getToolTipLocation(MouseEvent e) {
@@ -285,19 +288,6 @@ public class VentanaDatos extends JFrame {
 				return new Point(25, 2);
 			}
 		};
-		AlertaEntry1.setToolTipText("<html><p><font " +
-			"size=\"5\" face=\"Nyala\">Ingrese un nombre" +
-			"</font></p></html>");
-		AlertaEntry2.setToolTipText("<html><p><font " +
-			"size=\"5\" face=\"Nyala\">Ingrese un apellido" +
-			"</font></p></html>");
-		AlertaEntry3.setToolTipText("<html><p><font " +
-			"size=\"5\" face=\"Nyala\">Ingrese una ciudad" +
-			"</font></p></html>");
-		AlertaEntry4.setToolTipText("<html><p><font " +
-			"size=\"5\" face=\"Nyala\">Ingrese una edad (entera)" +
-			"</font></p></html>");
-
 		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				if (iconoAlertaEntry_path.endsWith("AlertaEntry.png")) {
@@ -305,34 +295,33 @@ public class VentanaDatos extends JFrame {
 				} else {
 					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry.png";
 				}
-				iconoAlertaEntry = CrearIcono(iconoAlertaEntry_path, 20, 20, true, false);
+
+				String iconoFinal = iconoAlertaEntry_path;
+				if (cargandoDatos) {
+					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
+					AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
+					AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
+					AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
+					iconoFinal = posicion_archivos + "ajax-loader.gif";
+				}
+				else {
+					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un nombre</font></p></html>");
+					AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un apellido</font></p></html>");
+					AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una ciudad</font></p></html>");
+					AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una edad (entera)</font></p></html>");
+				}
+				iconoAlertaEntry = CrearIcono(iconoFinal, 20, 20, true, false);
+				if (cargandoDatos && cargandoDatosIcon) {
+					return;
+				}
 				AlertaEntry1.setIcon(iconoAlertaEntry);
 				AlertaEntry2.setIcon(iconoAlertaEntry);
 				AlertaEntry3.setIcon(iconoAlertaEntry);
 				AlertaEntry4.setIcon(iconoAlertaEntry);
+				AlertaEntry5.setIcon(iconoAlertaEntry);
+				cargandoDatosIcon = true;
 			}
 		});
-		DocumentListener chequearTexto = new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				ocultarIcono(e);
-			}
-			public void removeUpdate(DocumentEvent e) {
-				ocultarIcono(e);
-			}
-			public void insertUpdate(DocumentEvent e) {
-				ocultarIcono(e);
-			}
-			public void ocultarIcono(DocumentEvent e) {
-				JTextField padre = (JTextField) e.getDocument().getProperty("padre");
-				JLabel alerta = (JLabel) e.getDocument().getProperty("alerta");
-				String x = padre.getText();
-				if (x.isEmpty() || x == null || x.trim().isEmpty()) {
-					alerta.setVisible(true);
-				} else {
-					alerta.setVisible(false);
-				}
-			}
-		};
 
 		CambioNombre = new JTextField();
 		CambioNombre.setFont(new Font("Nyala", Font.PLAIN, 25));
@@ -343,8 +332,6 @@ public class VentanaDatos extends JFrame {
 		CambioNombre.add(AlertaEntry1, BorderLayout.EAST);
 
 		CambioNombre.setDocument(new LimiteTexto(30));
-		CambioNombre.getDocument().putProperty("alerta", AlertaEntry1);
-		CambioNombre.getDocument().putProperty("padre", CambioNombre);
 
 		CambioApellido = new JTextField();
 		CambioApellido.setFont(fuente_25);
@@ -355,8 +342,6 @@ public class VentanaDatos extends JFrame {
 		CambioApellido.add(AlertaEntry2, BorderLayout.EAST);
 
 		CambioApellido.setDocument(new LimiteTexto(30));
-		CambioApellido.getDocument().putProperty("padre", CambioApellido);
-		CambioApellido.getDocument().putProperty("alerta", AlertaEntry2);
 
 		CambioCiudad = new JTextField();
 		CambioCiudad.setFont(fuente_25);
@@ -366,8 +351,6 @@ public class VentanaDatos extends JFrame {
 		CambioCiudad.add(AlertaEntry3, BorderLayout.EAST);
 
 		CambioCiudad.setDocument(new LimiteTexto(30));
-		CambioCiudad.getDocument().putProperty("padre", CambioCiudad);
-		CambioCiudad.getDocument().putProperty("alerta", AlertaEntry3);
 
 		lblSexo = new JLabel("Sexo");
 		lblSexo.setForeground(Color.WHITE);
@@ -402,9 +385,19 @@ public class VentanaDatos extends JFrame {
 			}
 		});
 
-
 		Sexo.setBounds(780, 400, 200, 30);
 		getContentPane().add(Sexo);
+		
+		AlertaEntry5 = new JLabel((Icon) null) {
+			private static final long serialVersionUID = 1L;
+
+			public Point getToolTipLocation(MouseEvent e) {
+				return new Point(25, 2);
+			}
+		};
+		AlertaEntry5.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
+		AlertaEntry5.setBounds(988, 405, 20, 20);
+		getContentPane().add(AlertaEntry5);
 
 		CambioEdad = new JFormattedTextField();
 		CambioEdad.setFont(fuente_25);
@@ -433,17 +426,63 @@ public class VentanaDatos extends JFrame {
 
 		llamarAtencionAlertaEntry.start();
 
+		Timer chequearAlertas = new Timer(200, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (CambioNombre.getText().isEmpty()) {
+					AlertaEntry1.setVisible(true);
+				}
+				else {
+					AlertaEntry1.setVisible(false);
+				}
+
+				if (CambioApellido.getText().isEmpty()) {
+					AlertaEntry2.setVisible(true);
+				}
+				else {
+					AlertaEntry2.setVisible(false);
+				}
+
+				if (CambioEdad.getText().isEmpty()) {
+					AlertaEntry4.setVisible(true);
+				}
+				else {
+					AlertaEntry4.setVisible(false);
+				}
+
+				if (CambioCiudad.getText().isEmpty()) {
+					AlertaEntry3.setVisible(true);
+				}
+				else {
+					AlertaEntry3.setVisible(false);
+				}
+			}
+		});
+		
 		// Obtener datos desde la base de datos.
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
+				// Mientras cargamos datos, no se toca nada ;)
+				Siguiente.setEnabled(false);
+
+				AlertaEntry5.setVisible(true);
+				CambiarFoto.setEnabled(false);
+				CambioNombre.setEnabled(false);
+				CambioCiudad.setEnabled(false);
+				CambioApellido.setEnabled(false);
+				CambioEdad.setEnabled(false);
+				Sexo.setEnabled(false);
+
 				try {
+					cargandoDatos = true;
 					ObtenerDatos();
 				} catch (NullPointerException | SQLException | IOException | BadLocationException e) {
-					e.printStackTrace();
 					System.out.println("Sin conexión a db, probando.");
 				}
+
 				String antesLoader = pathFoto;
 				try {
+					obteniendoFoto = true;
 					FotoDePerfil.setHorizontalAlignment(SwingConstants.CENTER);
 					FotoDePerfil.setIcon(new ImageIcon(posicion_archivos + "ajax-loader.gif"));
 					ObtenerFoto();
@@ -451,26 +490,36 @@ public class VentanaDatos extends JFrame {
 				} catch (NullPointerException | SQLException | IOException e) {
 					System.out.println("No hay foto aún.");
 				}
+				finally {
+					obteniendoFoto = false;
+					cargandoDatos = false;
+				}
 
 				FotoDePerfil.setHorizontalAlignment(SwingConstants.LEADING);
 				FotoDePerfil.setIcon(CrearIcono(antesLoader, 150, -1, true, false));
-				CambioNombre.getDocument().addDocumentListener(chequearTexto);
-				CambioApellido.getDocument().addDocumentListener(chequearTexto);
-				CambioCiudad.getDocument().addDocumentListener(chequearTexto);
-				CambioEdad.getDocument().addDocumentListener(chequearTexto);
+
+				CambiarFoto.setEnabled(true);
+				CambioNombre.setEnabled(true);
+				CambioCiudad.setEnabled(true);
+				CambioApellido.setEnabled(true);
+				CambioEdad.setEnabled(true);
+				Sexo.setEnabled(true);
+
+				chequearAlertas.start();
+				AlertaEntry5.setVisible(false);
 			}
 		});
 		t1.start();
 
-		Timer todoLleno = new Timer(100, new ActionListener() {@Override
+		Timer todoLleno = new Timer(100, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
-				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible());
+				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos));
 				Siguiente.setEnabled(completo);
 			}
 		});
 		todoLleno.start();
-
 	}
 
 	public ImageIcon CrearIcono(String path, int l, int a, boolean redimensionar, boolean busy) {
@@ -479,8 +528,12 @@ public class VentanaDatos extends JFrame {
 		}
 		ImageIcon icono = new ImageIcon(path);
 		if (redimensionar) {
+			int escalado = Image.SCALE_SMOOTH;
+			if (path.endsWith(".gif")) {
+				escalado = Image.SCALE_FAST;
+			}
 			Image img = icono.getImage();
-			Image newimg = img.getScaledInstance(l, a, java.awt.Image.SCALE_SMOOTH);
+			Image newimg = img.getScaledInstance(l, a, escalado);
 			ImageIcon new_icono = new ImageIcon(newimg);
 			this.setCursor(defaultCursor);
 			return new_icono;
@@ -564,22 +617,18 @@ public class VentanaDatos extends JFrame {
 
 		if (!nombre.equals("__base_defecto__")) {
 			CambioNombre.getDocument().insertString(0, nombre, null);
-			AlertaEntry1.setVisible(false);
 		}
 
 		if (!apellido.equals("__base_defecto__")) {
 			CambioApellido.setText(apellido);
-			AlertaEntry2.setVisible(false);
 		}
 
 		if (!ciudad.equals("__base_defecto__")) {
 			CambioCiudad.setText(ciudad);
-			AlertaEntry4.setVisible(false);
 		}
 
 		if (!(edad == -1)) {
 			CambioEdad.setText(Integer.toString(edad));
-			AlertaEntry3.setVisible(false);
 		}
 
 		String[] posibles = new String[3];
@@ -592,7 +641,7 @@ public class VentanaDatos extends JFrame {
 				break;
 			}
 		}
-		Sexo.setSelectedIndex(pos + 1);
+		Sexo.setSelectedIndex(pos);
 	}
 
 	public static String[] unique(String[] strings) {
