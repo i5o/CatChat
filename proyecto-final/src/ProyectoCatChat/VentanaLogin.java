@@ -35,7 +35,6 @@ public class VentanaLogin extends JFrame {
 
 	private JLabel lblCatchat, lblanNoTienes, lblyaEstsRegistrado, lblNewLabel_2, lblNewLabel_3;
 	private String posicion_archivos = new File("archivos/").getAbsolutePath() + "/".replace("\\", "/");
-	private Font fuente_entry = new Font("Nyala", Font.PLAIN, 25);
 
 	public JLabel lblNewLabel, datosIncorrectos;
 	public JButton Entrar, Registrarse;
@@ -44,8 +43,11 @@ public class VentanaLogin extends JFrame {
 	private JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5;
 	String iconoAlertaEntry_path;
 	ImageIcon iconoAlertaEntry;
+
 	DocumentListener chequearTexto;
+	
 	public JLabel EmailEnUso, UsuarioEnUso;
+
 	Color colorLabel = Color.decode("#EF6161");
 
 	public Timer llamarAtencionAlertaEntry, datosEntradaLlenos, datosRegistroLlenos, llamarAtencionInfo;
@@ -70,6 +72,13 @@ public class VentanaLogin extends JFrame {
 
 
 	private void initialize() {
+		// Tipografías
+    	Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 25);
+    	Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
+    	Font fuente_titulo_30 = new Font("Raleway", Font.PLAIN, 30);
+    	Font fuente_titulo_55 = new Font("Raleway", Font.PLAIN, 55);
+
+		
 		getContentPane().setBackground(SystemColor.activeCaption);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "/Saludo.png"));
 		setTitle("CatChat");
@@ -105,27 +114,27 @@ public class VentanaLogin extends JFrame {
 		AlertaEntry3 = new JLabel(iconoAlertaEntry) {
 			private static final long serialVersionUID = 1L;
 			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(0, 30);
+				return new Point(-50, 30);
 			}
 		};
 		AlertaEntry4 = new JLabel(iconoAlertaEntry) {
 			private static final long serialVersionUID = 1L;
 			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(0, 30);
+				return new Point(-50, 30);
 			}
 		};
 		AlertaEntry5 = new JLabel(iconoAlertaEntry) {
 			private static final long serialVersionUID = 1L;
 			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(0, 30);
+				return new Point(-100, 30);
 			}
 		};
 
-		AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un usuario</font></p></html>");
-		AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una contraseña</font></p></html>");
-		AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un usuario</font></p></html>");
-		AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una contraseña</font></p></html>");
-		AlertaEntry5.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un correo electrónico</font></p></html>");
+		AlertaEntry1.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un usuario</font></p></html>");
+		AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una contraseña</font></p></html>");
+		AlertaEntry3.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un usuario</font></p></html>");
+		AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una contraseña</font></p></html>");
+		AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un correo electrónico</font></p></html>");
 
 		llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
@@ -235,7 +244,7 @@ public class VentanaLogin extends JFrame {
 		Entrar = new JButton("Entrar") {
 			private static final long serialVersionUID = 1L;
 			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(0, 45);
+				return new Point(-30, 45);
 			}
 		};
 
@@ -244,20 +253,20 @@ public class VentanaLogin extends JFrame {
 		Entrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {}
 		});
-		Entrar.setFont(new Font("Nyala", Font.PLAIN, 25));
+		Entrar.setFont(fuente_entry);
 		getContentPane().add(Entrar);
 
 		//Etiqueta bienvenida
 		lblCatchat = new JLabel("¡Bienvenido a CatChat!");
 		lblCatchat.setBounds(20, 50, 605, 95);
-		lblCatchat.setFont(new Font("Candara", Font.BOLD, 55));
+		lblCatchat.setFont(fuente_titulo_55);
 		lblCatchat.setForeground(new Color(230, 230, 250));
 		getContentPane().add(lblCatchat);
 
 		//Etiqueta registrarse
 		lblanNoTienes = new JLabel("¡Aún no tienes una cuenta? ¡Regístrate!");
 		lblanNoTienes.setBounds(675, 275, 690, 40);
-		lblanNoTienes.setFont(new Font("Nyala", Font.BOLD, 30));
+		lblanNoTienes.setFont(fuente_titulo_30);
 		lblanNoTienes.setForeground(new Color(255, 255, 255));
 		getContentPane().add(lblanNoTienes);
 
@@ -327,7 +336,7 @@ public class VentanaLogin extends JFrame {
 		Registrarse = new JButton("Registrarse") {
 			private static final long serialVersionUID = 1L;
 			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(0, 50);
+				return new Point(-15, 50);
 			}
 		};
 		Registrarse.setBounds(850, 482, 160, 47);
@@ -337,7 +346,7 @@ public class VentanaLogin extends JFrame {
 
 		lblyaEstsRegistrado = new JLabel("¿Ya estás registrado? ¡Ingresa!");
 		lblyaEstsRegistrado.setForeground(Color.WHITE);
-		lblyaEstsRegistrado.setFont(new Font("Nyala", Font.BOLD, 30));
+		lblyaEstsRegistrado.setFont(fuente_titulo_30);
 		lblyaEstsRegistrado.setBounds(664, 11, 422, 40);
 		getContentPane().add(lblyaEstsRegistrado);
 
@@ -369,7 +378,7 @@ public class VentanaLogin extends JFrame {
 
 		EmailEnUso = new JLabel("Ya existe una cuenta con ese correo electrónico");
 		EmailEnUso.setForeground(new Color(239, 97, 97));
-		EmailEnUso.setFont(new Font("Nyala", Font.PLAIN, 25));
+		EmailEnUso.setFont(fuente_titulo_20);
 		EmailEnUso.setBounds(700, 437, 455, 35);
 		EmailEnUso.setVisible(false);
 		getContentPane().add(EmailEnUso);
@@ -386,7 +395,7 @@ public class VentanaLogin extends JFrame {
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible());
 				Entrar.setEnabled(completo);
 				if (!completo) {
-					Entrar.setToolTipText("<html><center style='font-family: Nyala; font-size: 12px; color: blaack;'>Ingrese los datos requeridos<br>para iniciar sesión</center></html>");
+					Entrar.setToolTipText("<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para iniciar sesión</center></html>");
 				} else {
 					Entrar.setToolTipText(null);
 				}
@@ -400,7 +409,7 @@ public class VentanaLogin extends JFrame {
 				completo = (!AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && !AlertaEntry5.isVisible());
 				Registrarse.setEnabled(completo);
 				if (!completo) {
-					Registrarse.setToolTipText("<html><center style='font-family: Nyala; font-size: 12px; color: blaack;'>Ingrese los datos requeridos<br>para registrarse</center></html>");
+					Registrarse.setToolTipText("<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para registrarse</center></html>");
 				} else {
 					Registrarse.setToolTipText(null);
 				}

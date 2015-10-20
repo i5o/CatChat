@@ -84,8 +84,6 @@ public class VentanaDatos extends JFrame {
 	public JComboBox < String > Sexo;
 
 	private String posicion_archivos = new File("archivos/").getAbsolutePath() + "/".replace("\\", "/");
-	private Font fuente_30 = new Font("Nyala", Font.PLAIN, 30);
-	private Font fuente_25 = new Font("Nyala", Font.PLAIN, 25);
 
 	static String idUsuario = null;
 
@@ -139,6 +137,13 @@ public class VentanaDatos extends JFrame {
 	}
 
 	private void initialize() {
+		// Tipografías
+    	Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 20);
+
+    	Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
+    	Font fuente_titulo_25 = new Font("Raleway", Font.PLAIN, 25);
+    	Font fuente_titulo_35 = new Font("Raleway", Font.PLAIN, 35);
+	
 		setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "/Saludo.png"));
 		setTitle("CatChat");
 		setBounds(100, 100, 1280, 720);
@@ -153,20 +158,20 @@ public class VentanaDatos extends JFrame {
 		getContentPane().add(labelGatito);
 
 		lblCompleteEstosDatos = new JLabel("Por favor, completa estos datos");
-		lblCompleteEstosDatos.setFont(new Font("Nyala", Font.PLAIN, 45));
+		lblCompleteEstosDatos.setFont(fuente_titulo_35);
 		lblCompleteEstosDatos.setForeground(new Color(230, 230, 250));
 		lblCompleteEstosDatos.setBounds(60, 548, 537, 48);
 		getContentPane().add(lblCompleteEstosDatos);
 
-		lblNewLabel_1 = new JLabel("Pusheen quiere saber m\u00E1s acerca ti");
+		lblNewLabel_1 = new JLabel("Pusheen quiere saber más acerca ti");
 		lblNewLabel_1.setForeground(new Color(230, 230, 250));
-		lblNewLabel_1.setFont(new Font("Nyala", Font.PLAIN, 45));
+		lblNewLabel_1.setFont(fuente_titulo_35);
 		lblNewLabel_1.setBounds(28, 45, 621, 51);
 		getContentPane().add(lblNewLabel_1);
 
 		Foto = new JLabel("Foto de perfil");
 		Foto.setForeground(Color.WHITE);
-		Foto.setFont(fuente_30);
+		Foto.setFont(fuente_titulo_25);
 		Foto.setBounds(1050, 110, 162, 48);
 		getContentPane().add(Foto);
 
@@ -183,31 +188,31 @@ public class VentanaDatos extends JFrame {
 				}
 			}
 		});
-		CambiarFoto.setFont(fuente_30);
-		CambiarFoto.setBounds(1060, 350, 130, 35);
+		CambiarFoto.setFont(fuente_titulo_25);
+		CambiarFoto.setBounds(1050, 350, 150, 35);
 		getContentPane().add(CambiarFoto);
 
 		lblNombre = new JLabel("Nombre");
 		lblNombre.setForeground(Color.WHITE);
-		lblNombre.setFont(fuente_30);
+		lblNombre.setFont(fuente_titulo_25);
 		lblNombre.setBounds(655, 125, 110, 30);
 		getContentPane().add(lblNombre);
 
 		lblNewLabel_3 = new JLabel("Apellido");
-		lblNewLabel_3.setFont(fuente_30);
+		lblNewLabel_3.setFont(fuente_titulo_25);
 		lblNewLabel_3.setForeground(Color.WHITE);
 		lblNewLabel_3.setBounds(655, 195, 110, 30);
 		getContentPane().add(lblNewLabel_3);
 
 		lblEdad = new JLabel("Edad");
 		lblEdad.setForeground(Color.WHITE);
-		lblEdad.setFont(fuente_30);
+		lblEdad.setFont(fuente_titulo_25);
 		lblEdad.setBounds(655, 265, 110, 30);
 		getContentPane().add(lblEdad);
 
 		lblCiudad = new JLabel("Ciudad");
 		lblCiudad.setForeground(Color.WHITE);
-		lblCiudad.setFont(fuente_30);
+		lblCiudad.setFont(fuente_titulo_25);
 		lblCiudad.setBounds(655, 335, 110, 30);
 		getContentPane().add(lblCiudad);
 
@@ -305,18 +310,18 @@ public class VentanaDatos extends JFrame {
 					} else {
 						palabra = "Guardando";
 					}
-					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry5.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry1.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry3.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
+					AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
 
 					iconoFinal = posicion_archivos + "ajax-loader.gif";
 				} else {
-					AlertaEntry1.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un nombre</font></p></html>");
-					AlertaEntry2.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese un apellido</font></p></html>");
-					AlertaEntry3.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una ciudad</font></p></html>");
-					AlertaEntry4.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Ingrese una edad (entera)</font></p></html>");
+					AlertaEntry1.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un nombre</font></p></html>");
+					AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un apellido</font></p></html>");
+					AlertaEntry3.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una ciudad</font></p></html>");
+					AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una edad (entera)</font></p></html>");
 				}
 				iconoAlertaEntry = CrearIcono(iconoFinal, 20, 20, true, false);
 				if (ManejandoDatos) {
@@ -334,7 +339,7 @@ public class VentanaDatos extends JFrame {
 		});
 
 		CambioNombre = new JTextField();
-		CambioNombre.setFont(new Font("Nyala", Font.PLAIN, 25));
+		CambioNombre.setFont(fuente_entry);
 		CambioNombre.setBounds(780, 125, 200, 30);
 		getContentPane().add(CambioNombre);
 		CambioNombre.setColumns(10);
@@ -344,7 +349,7 @@ public class VentanaDatos extends JFrame {
 		CambioNombre.setDocument(new LimiteTexto(30));
 
 		CambioApellido = new JTextField();
-		CambioApellido.setFont(fuente_25);
+		CambioApellido.setFont(fuente_entry);
 		CambioApellido.setColumns(10);
 		CambioApellido.setBounds(780, 195, 200, 30);
 		getContentPane().add(CambioApellido);
@@ -354,7 +359,7 @@ public class VentanaDatos extends JFrame {
 		CambioApellido.setDocument(new LimiteTexto(30));
 
 		CambioCiudad = new JTextField();
-		CambioCiudad.setFont(fuente_25);
+		CambioCiudad.setFont(fuente_entry);
 		CambioCiudad.setBounds(780, 335, 200, 30);
 		getContentPane().add(CambioCiudad);
 		CambioCiudad.setLayout(new BorderLayout());
@@ -365,11 +370,12 @@ public class VentanaDatos extends JFrame {
 		lblSexo = new JLabel("Sexo");
 		lblSexo.setForeground(Color.WHITE);
 		lblSexo.setBounds(655, 390, 100, 40);
-		lblSexo.setFont(fuente_30);
+		lblSexo.setFont(fuente_titulo_25);
 		getContentPane().add(lblSexo);
 
 		Sexo = new JComboBox < String > ();
 		Sexo.setFocusable(false);
+		Sexo.setFont(fuente_entry);
 
 		Sexo.setForeground(Color.BLACK);
 		Sexo.setBackground(Color.WHITE);
@@ -405,19 +411,17 @@ public class VentanaDatos extends JFrame {
 				return new Point(25, 2);
 			}
 		};
-		AlertaEntry5.setToolTipText("<html><p><font size=\"5\" face=\"Nyala\">Cargando datos, espere por favor</font></p></html>");
+		AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>Cargando datos, espere por favor</font></p></html>");
 		AlertaEntry5.setBounds(988, 405, 20, 20);
 		getContentPane().add(AlertaEntry5);
 
 		CambioEdad = new JFormattedTextField();
-		CambioEdad.setFont(fuente_25);
+		CambioEdad.setFont(fuente_entry);
 		CambioEdad.setBounds(780, 265, 200, 30);
 		getContentPane().add(CambioEdad);
 		CambioEdad.setLayout(new BorderLayout());
 		CambioEdad.add(AlertaEntry4, BorderLayout.EAST);
 		CambioEdad.setDocument(new SoloEnteros(2));
-		CambioEdad.getDocument().putProperty("padre", CambioEdad);
-		CambioEdad.getDocument().putProperty("alerta", AlertaEntry4);
 
 		labelGatito1 = new JLabel("");
 		labelGatito1.setIcon(new ImageIcon(posicion_archivos + "/Friki.png"));
@@ -425,7 +429,7 @@ public class VentanaDatos extends JFrame {
 		getContentPane().add(labelGatito1);
 
 		Siguiente = new JButton("Siguiente");
-		Siguiente.setFont(fuente_25);
+		Siguiente.setFont(fuente_titulo_20);
 		Siguiente.setBounds(1124, 636, 130, 35);
 		getContentPane().add(Siguiente);
 
