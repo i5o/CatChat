@@ -1,5 +1,6 @@
 package ProyectoCatChat;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -38,6 +39,10 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
+import chrriis.common.UIUtils;
+import chrriis.dj.nativeswing.swtimpl.NativeInterface;
+import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
 
 public class VentanaMensajes extends JFrame {
 
@@ -104,6 +109,17 @@ public class VentanaMensajes extends JFrame {
 		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setLeftComponent(splitPane_1);
 
+		NativeInterface.open();
+
+	    JWebBrowser webBrowser = new JWebBrowser();
+	    webBrowser.setJavascriptEnabled(true);
+	    webBrowser.setStatusBarVisible(false);
+	    webBrowser.setBarsVisible(false);
+	    webBrowser.setMenuBarVisible(false);
+	    webBrowser.navigate("http://www.google.com");
+	    webBrowser.setBounds(0, 0, 973, 690);
+	    panel_1.add(webBrowser);
+		
 		panelUsuarios = new JPanel( new ScrollLayout() );
 		JScrollPane scrollPanel = new JScrollPane(panelUsuarios);
 		scrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
