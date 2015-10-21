@@ -77,9 +77,11 @@ public class VentanaDatos extends JFrame {
 	CambioEdad;
 
 	public JButton Continuar,
-	CambiarFoto,
-	Siguiente,
-	fotoDefecto;
+	CambiarFoto;
+
+	public static JButton Siguiente;
+
+	public JButton fotoDefecto;
 
 	public JComboBox < String > Sexo;
 
@@ -92,9 +94,8 @@ public class VentanaDatos extends JFrame {
 	public String pathFotoDefectoHombre = posicion_archivos + "/Hombre.png";
 	public String pathFotoDefectoMujer = posicion_archivos + "/Mujer.png";
 	static Connection conexion = null;
-	static Statement stmt = null;
 
-	Timer ponerDefecto;
+	public Timer ponerDefecto, todoLleno;
 
 
 	private static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
@@ -118,7 +119,7 @@ public class VentanaDatos extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VentanaDatos window = new VentanaDatos(null, null, null, false);
+					VentanaDatos window = new VentanaDatos(null, null);
 					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -127,12 +128,11 @@ public class VentanaDatos extends JFrame {
 		});
 	}
 
-	public VentanaDatos(String idUsuario_, Connection conexion_, Statement stmt_, boolean Editando_) {
+	public VentanaDatos(String idUsuario_, Connection conexion_) {
 
 		getContentPane().setBackground(new Color(30, 144, 255));
 		idUsuario = idUsuario_;
 		conexion = conexion_;
-		stmt = stmt_;
 		initialize();
 	}
 
@@ -519,7 +519,7 @@ public class VentanaDatos extends JFrame {
 		});
 		t1.start();
 
-		Timer todoLleno = new Timer(100, new ActionListener() {@Override
+		todoLleno = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos));
@@ -602,7 +602,8 @@ public class VentanaDatos extends JFrame {
 
 	public void ObtenerFoto() throws SQLException, IOException, NullPointerException {
 		String sentencia = "select foto,extImagen from usuario where usuario='" + idUsuario + "';";
-		ResultSet rs = stmt.executeQuery(sentencia);
+		Statement stmt_foto = conexion.createStatement();
+		ResultSet rs = stmt_foto.executeQuery(sentencia);
 
 		rs.next();
 		String extImage = rs.getString(2);
@@ -632,7 +633,8 @@ public class VentanaDatos extends JFrame {
 
 	public void ObtenerDatos() throws SQLException, IOException, NullPointerException, BadLocationException {
 		String sentencia = "select Nombre,Apellido,Edad,Ciudad,Sexo from usuario where usuario='" + idUsuario + "';";
-		ResultSet rs = stmt.executeQuery(sentencia);
+		Statement stmt_datos = conexion.createStatement();
+		ResultSet rs = stmt_datos.executeQuery(sentencia);
 		rs.next();
 
 

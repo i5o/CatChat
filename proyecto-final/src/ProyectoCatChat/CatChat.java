@@ -1,7 +1,10 @@
 package ProyectoCatChat;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,12 +24,16 @@ public class CatChat {
 
 	static boolean Desarrollo;
 
-	static VentanaLogin ventanaInicial;
-	static VentanaDatos ventanaSecundaria;
+	static VentanaLogin ventanaLogin;
+	static VentanaDatos ventanaDatos;
+	static VentanaMensajes ventanaMensajes;
 	static String Usuario;
+	
+	static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+	static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+	static Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Desarrollo = true;
 
 		try {
@@ -38,31 +45,32 @@ public class CatChat {
 				System.exit(0);
 			}
 		}
-		ventanaInicial = new VentanaLogin();
-		ventanaInicial.setVisible(true);
+		ventanaLogin = new VentanaLogin();
+		ventanaLogin.setVisible(true);
 
-		ventanaInicial.Registrarse.addActionListener(new ActionListener() {
+		ventanaLogin.Registrarse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					Registro();
-					if (ventanaInicial.UsuarioEnUso.isVisible() || ventanaInicial.EmailEnUso.isVisible()) {
+					if (ventanaLogin.UsuarioEnUso.isVisible() || ventanaLogin.EmailEnUso.isVisible()) {
 						return;
 					}
-					llamarVentanaSecundaria();
+					llamarVentanaDatos();
 
 				} catch (SQLException | IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		ventanaInicial.Entrar.addActionListener(new ActionListener() {
+
+		ventanaLogin.Entrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					if (Login()) {
 						if (DebeLlenarDatos()) {
-							llamarVentanaSecundaria();
+							llamarVentanaDatos();
 						} else {
-							System.out.println("Aún no implementado, mensajes 3:");
+							llamarVentanaMensajes();
 						}
 					}
 				} catch (SQLException e) {
@@ -77,7 +85,6 @@ public class CatChat {
 
 		System.out.println("Intentando conectar.");
 		conexion = DriverManager.getConnection(url);
-		stmt = conexion.createStatement();
 		System.out.println("Conexión establecida");
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {@Override
@@ -96,18 +103,18 @@ public class CatChat {
 	public static void Registro() throws SQLException, IOException {
 		String sentencia = "INSERT INTO `usuario` (`usuario`, `contraseña`, `email`) VALUES (?, ?, ?);";
 		PreparedStatement psmnt = null;
-		String nuevoEmail = ventanaInicial.nuevoEmail.getText();
-		String nuevoPassword = ventanaInicial.nuevoPassword.getText();
-		String nuevoUsuario = ventanaInicial.nuevoUsuario.getText();
+		String nuevoEmail = ventanaLogin.nuevoEmail.getText();
+		String nuevoPassword = ventanaLogin.nuevoPassword.getText();
+		String nuevoUsuario = ventanaLogin.nuevoUsuario.getText();
 
 		boolean algoUsado = false;
 		if (!CampoVacio("email", nuevoEmail)) {
 			algoUsado = true;
-			ventanaInicial.EmailEnUso.setVisible(true);
+			ventanaLogin.EmailEnUso.setVisible(true);
 		}
 		if (!CampoVacio("usuario", nuevoUsuario)) {
 			algoUsado = true;
-			ventanaInicial.UsuarioEnUso.setVisible(true);
+			ventanaLogin.UsuarioEnUso.setVisible(true);
 		}
 
 		if (algoUsado) {
@@ -125,8 +132,8 @@ public class CatChat {
 
 	public static boolean Login() throws SQLException {
 		String sentencia = "select usuario,contraseña from `usuario` where `usuario`=? and `contraseña`=?";
-		String user = ventanaInicial.EntrarUsuario.getText();
-		String password = ventanaInicial.EntrarPassword.getText();
+		String user = ventanaLogin.EntrarUsuario.getText();
+		String password = ventanaLogin.EntrarPassword.getText();
 		PreparedStatement psmnt = null;
 
 		psmnt = conexion.prepareStatement(sentencia);
@@ -137,7 +144,7 @@ public class CatChat {
 		ResultSet resultados = psmnt.executeQuery();
 
 		if (consultaVacia(resultados)) {
-			ventanaInicial.datosIncorrectos.setVisible(true);
+			ventanaLogin.datosIncorrectos.setVisible(true);
 			return false;
 		}
 		resultados.next();
@@ -174,7 +181,8 @@ public class CatChat {
 
 	public static boolean CampoVacio(String campo, String valor) throws SQLException {
 		String sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
-		ResultSet rs = stmt.executeQuery(sentencia);
+		Statement stmt_datosvacios = conexion.createStatement();
+		ResultSet rs = stmt_datosvacios.executeQuery(sentencia);
 		return consultaVacia(rs);
 	}
 
@@ -183,22 +191,24 @@ public class CatChat {
 		return (!rs.isBeforeFirst() && rs.getRow() == 0);
 	}
 
-	public static void llamarVentanaSecundaria() {
-		ventanaInicial.llamarAtencionAlertaEntry.stop();
-		ventanaInicial.datosEntradaLlenos.stop();
-		ventanaInicial.datosRegistroLlenos.stop();
-		ventanaInicial.llamarAtencionInfo.stop();
-		ventanaInicial.setVisible(false);
-		VentanaDatos ventanaSecundaria = new VentanaDatos(Usuario, conexion, stmt, true);
-		ventanaSecundaria.setVisible(true);
+	public static void llamarVentanaDatos() {
+		ventanaLogin.llamarAtencionAlertaEntry.stop();
+		ventanaLogin.datosEntradaLlenos.stop();
+		ventanaLogin.datosRegistroLlenos.stop();
+		ventanaLogin.llamarAtencionInfo.stop();
+		ventanaLogin.setVisible(false);
+		VentanaDatos ventanaDatos = new VentanaDatos(Usuario, conexion);
+		ventanaDatos.setVisible(true);
 
-		ventanaSecundaria.Siguiente.addActionListener(new ActionListener() {
+		ventanaDatos.Siguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Thread t1 = new Thread(new Runnable() {
 					public void run() {
 						try {
-							GuardarDatos(ventanaSecundaria);
-							ventanaSecundaria.dispose();
+							GuardarDatos(ventanaDatos);
+							ventanaDatos.todoLleno.stop();
+							ventanaDatos.dispose();
+							llamarVentanaMensajes();
 						} catch (SQLException | IOException e) {
 							e.printStackTrace();
 						}
@@ -209,11 +219,35 @@ public class CatChat {
 		});
 	}
 
-	public static boolean DebeLlenarDatos() {
+	public static void llamarVentanaMensajes() {
+		ventanaLogin.setVisible(false);
+		ventanaMensajes = new VentanaMensajes(Usuario, conexion);
+		ventanaMensajes.setVisible(true);
+
+		ventanaMensajes.btnEditarDatos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            	ventanaMensajes.setCursor(handCursor);
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+            	ventanaMensajes.setCursor(defaultCursor);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	llamarVentanaDatos();
+            	ventanaMensajes.dispose();
+            }
+        });
+	}
+	
+	public static boolean DebeLlenarDatos() throws SQLException {
 		boolean debe = false;
 		String sentencia = "select registroCompleto from usuario where usuario='" + Usuario + "';";
+		Statement stmt_llenardatos = conexion.createStatement();
 		try {
-			ResultSet rs = stmt.executeQuery(sentencia);
+			ResultSet rs = stmt_llenardatos.executeQuery(sentencia);
 			rs.next();
 			if (rs.getString(1).equals("1")) {
 				debe = false;
