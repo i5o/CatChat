@@ -12,11 +12,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,6 +40,10 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class VentanaMensajes extends JFrame {
 
@@ -64,7 +70,7 @@ public class VentanaMensajes extends JFrame {
 	
 	private String seleccionado;
 	private JButton seleccionado_btn;
-
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -226,7 +232,6 @@ public class VentanaMensajes extends JFrame {
 			}
 		});
 		chequearMensajes.start();	
-
 	}
 	
 	public void AgregarUsuario(final String usuario_) {
@@ -539,7 +544,7 @@ public class VentanaMensajes extends JFrame {
 		panelMensajes.add(Mensaje);
 		panelMensajes.revalidate();
 		panelMensajes.repaint();
-
+	
 	}
 	
 	public JSplitPane CrearListaMensajes(String user_) {
@@ -621,7 +626,51 @@ public class VentanaMensajes extends JFrame {
 				Mensaje.setText("");
 			}
 		});
-		
+		Thread t1 = new Thread(new Runnable() {
+			public void run() {
+				ObtenerMensajes("ignacio2", "ignacio");
+			}
+		});
+		t1.start();
 		return splitMensajes;
+	}
+	
+	public void ObtenerMensajes(String user1, String user2) {
+		String sentencia_busqueda = "select texto from Mensajes where '" + user1 + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
+		String sentencia_agregado = "INSERT INTO `Mensajes` (`participante1`, `participante2`, `texto`) VALUES (?, ?, ?);";
+
+		Statement stmt_;
+		String jsonmensajes = "{ 'Mensajes': [ ['a', 'b'], ['e', 'f'] ] }";
+				
+		try {
+			stmt_ = conexion.createStatement();
+			ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
+			rs.next();
+			jsonmensajes = rs.getString(1);
+
+		} catch (SQLException e) {
+			String error = e.toString();
+			if (error.contains("Illegal operation on empty result set.")) {
+				PreparedStatement psmnt;
+				try {
+					psmnt = conexion.prepareStatement(sentencia_agregado);
+					psmnt.setString(1, user1);
+					psmnt.setString(2, user2);
+					psmnt.setString(3, jsonmensajes);
+					psmnt.executeUpdate();
+				} catch (SQLException e1) {
+				}
+			}
+		}
+		
+
+
+	    JSONObject obj1 = new JSONObject(jsonmensajes);
+	    JSONArray result = obj1.getJSONArray("Mensajes");
+	    cantidadMensajes = 0;
+	    for (int m=0; m<result.length(); m++) {
+		    JSONArray d = result.getJSONArray(m);
+		    CrearWidgetMensaje(d.getString(0), d.getString(1));
+	    }
 	}
 }
