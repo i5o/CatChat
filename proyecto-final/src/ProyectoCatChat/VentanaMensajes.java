@@ -1,6 +1,6 @@
 package ProyectoCatChat;
 
-import java.awt.BorderLayout;
+import java.awt.Adjustable;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -10,6 +10,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -21,28 +23,26 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.border.LineBorder;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-
-import chrriis.common.UIUtils;
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.SwingConstants;
 
 public class VentanaMensajes extends JFrame {
 
@@ -50,7 +50,7 @@ public class VentanaMensajes extends JFrame {
 	private static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	private static Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 	private static final long serialVersionUID = 1L;
-	private static String posicion_archivos = new File("archivos/").getAbsolutePath() + "/".replace("\\", "/");
+	private static String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
 	private static int cantidadUsuarios;
 	private static String usuario;
 	static Connection conexion = null;
@@ -61,7 +61,7 @@ public class VentanaMensajes extends JFrame {
 	
 	private Map<String, JLabel> fotos = new HashMap<String, JLabel>();
 	
-	JPanel panelUsuarios;
+	private JPanel panelUsuarios, panelMensajes;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -91,89 +91,133 @@ public class VentanaMensajes extends JFrame {
 		setResizable(false);
 		setLocationRelativeTo(null);
 		
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setDividerLocation(300);
-		splitPane.setBounds(0, 0, 1280, 692);
-		splitPane.setDividerSize(0);
-		splitPane.setEnabled(false);
-		getContentPane().add(splitPane);
-		
-		JPanel panel_1 = new JPanel();
-		splitPane.setRightComponent(panel_1);
-		panel_1.setLayout(null);
-		
-		JSplitPane splitPane_1 = new JSplitPane();
-		splitPane_1.setDividerSize(2);
-		splitPane_1.setEnabled(false);
-		splitPane_1.setDividerLocation(60);
-		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		splitPane.setLeftComponent(splitPane_1);
+		JSplitPane splitPrincipal = new JSplitPane();
+		splitPrincipal.setDividerLocation(300);
+		splitPrincipal.setBounds(0, 0, 1280, 692);
+		splitPrincipal.setDividerSize(0);
+		splitPrincipal.setEnabled(false);
+		getContentPane().add(splitPrincipal);
 
-		NativeInterface.open();
-
-	    JWebBrowser webBrowser = new JWebBrowser();
-	    webBrowser.setJavascriptEnabled(true);
-	    webBrowser.setStatusBarVisible(false);
-	    webBrowser.setBarsVisible(false);
-	    webBrowser.setMenuBarVisible(false);
-	    webBrowser.navigate("http://www.google.com");
-	    webBrowser.setBounds(0, 0, 973, 690);
-	    panel_1.add(webBrowser);
+		JSplitPane splitUsuarios = new JSplitPane();
+		splitUsuarios.setDividerSize(2);
+		splitUsuarios.setEnabled(false);
+		splitUsuarios.setDividerLocation(60);
+		splitUsuarios.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitPrincipal.setLeftComponent(splitUsuarios);
 		
-		panelUsuarios = new JPanel( new ScrollLayout() );
-		JScrollPane scrollPanel = new JScrollPane(panelUsuarios);
-		scrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		splitPane_1.setRightComponent(scrollPanel);
+		panelUsuarios = new JPanel(new ScrollLayout());
+		JScrollPane scrollUsuarios = new JScrollPane(panelUsuarios);
+		scrollUsuarios.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		splitUsuarios.setRightComponent(scrollUsuarios);
 
-		JPanel panel = new JPanel();
+		JPanel panelDatosUsuario = new JPanel();
 
-		splitPane_1.setBackground(new Color(0,0,0,0));
-		splitPane.setBackground(new Color(0,0,0,0));
-		panel.setBackground(new Color(0,0,0,0));
-		panel_1.setBackground(new Color(0,0,0,0));
-		panelUsuarios.setBackground(new Color(0,0,0,0));
-		scrollPanel.setBackground(new Color(0,0,0,0));
-		
-		splitPane_1.setLeftComponent(panel);
-		panel.setLayout(null);
+		splitUsuarios.setLeftComponent(panelDatosUsuario);
+		panelDatosUsuario.setLayout(null);
 		
 		fotodePerfil = new JLabel();
-		fotodePerfil.setBounds(5, 5, 50, 50);
-		panel.add(fotodePerfil);
+		fotodePerfil.setBounds(5, 4, 50, 50);
+		panelDatosUsuario.add(fotodePerfil);
 		fotodePerfil.setVerticalAlignment(JLabel.CENTER);
 		fotodePerfil.setHorizontalAlignment(JLabel.CENTER);
 		fotodePerfil.setIcon(CrearIcono(pathMiFoto, 30, 30, true, true));
 		fotodePerfil.setBorder(new LineBorder(new Color(255, 165, 0), 2, true));
 		
 		JPanel fotodePerfilMarco = new JPanel();
-		fotodePerfilMarco.setBounds(5, 5, 50, 50);
-		panel.add(fotodePerfilMarco);
+		fotodePerfilMarco.setBounds(5, 4, 50, 50);
+		panelDatosUsuario.add(fotodePerfilMarco);
 		fotodePerfilMarco.setBorder(new LineBorder(new Color(30, 144, 255), 1, true));
 		fotodePerfilMarco.setBackground(new Color(30, 144, 255));
-				
-		JLabel lblNombre = new JLabel("?");
-		lblNombre.setForeground(Color.WHITE);
-		lblNombre.setBounds(75, 8, 185, 30);
-		lblNombre.setFont(new Font("Josefin Sans", Font.BOLD, 18));
-		try {
-			lblNombre.setText(ObtenerNombre(usuario));
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		panel.add(lblNombre);
 
 		btnEditarDatos = CrearBotonAnimado("/editarPerfil.png", "/editarPerfil_.png");
 		btnEditarDatos.setBounds(240, 18, 20, 20);
-		panel.add(btnEditarDatos);
-				
+		panelDatosUsuario.add(btnEditarDatos);
+		
+		JSplitPane splitMensajes = new JSplitPane();
+		splitMensajes.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitPrincipal.setRightComponent(splitMensajes);
+		splitMensajes.setDividerSize(2);
+		splitMensajes.setEnabled(false);
+		splitMensajes.setDividerLocation(600);
+		
+		JPanel panelEnvio = new JPanel();
+		splitMensajes.setRightComponent(panelEnvio);
+		panelEnvio.setLayout(null);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(0, 0, 913, 87);
+		panelEnvio.add(scrollPane);
+		
+		JTextArea Mensaje = new JTextArea();
+		Mensaje.setLineWrap(true);
+		Mensaje.setLocation(487, 0);
+		scrollPane.setViewportView(Mensaje);
+		
+		JButton btnEnviar = CrearBotonAnimado("/Enviar.png", "/Enviar_.png");
+		btnEnviar.setBounds(917, 18, 50, 50);
+		panelEnvio.add(btnEnviar);
+ 
+		JSplitPane splitInternalMensajes = new JSplitPane();
+		splitInternalMensajes.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitMensajes.setLeftComponent(splitInternalMensajes);
+		splitInternalMensajes.setDividerSize(2);
+		splitInternalMensajes.setEnabled(false);
+		splitInternalMensajes.setDividerLocation(60);
+			
+		JPanel panelDatosOtro = new JPanel();
+		splitInternalMensajes.setLeftComponent(panelDatosOtro);
+		panelDatosOtro.setLayout(null);
+		
+		JLabel label = new JLabel();
+		label.setVerticalAlignment(SwingConstants.CENTER);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setBorder(new LineBorder(new Color(255, 165, 0), 2, true));
+		label.setBounds(882, 4, 50, 50);
+		panelDatosOtro.add(label);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new LineBorder(new Color(30, 144, 255), 1, true));
+		panel.setBackground(new Color(30, 144, 255));
+		panel.setBounds(882, 4, 50, 50);
+		panelDatosOtro.add(panel);
+		
+		JLabel lblNombre1 = new JLabel("?");
+		lblNombre1.setBounds(59, 14, 185, 30);
+		panelDatosOtro.add(lblNombre1);
+		lblNombre1.setForeground(Color.WHITE);
+		lblNombre1.setFont(new Font("Josefin Sans", Font.BOLD, 18));
+		
+		JLabel lblNombre = new JLabel("?");
+		lblNombre.setForeground(Color.WHITE);
+		lblNombre.setFont(new Font("Josefin Sans", Font.BOLD, 18));
+		lblNombre.setBounds(65, 14, 185, 30);
+		panelDatosUsuario.add(lblNombre);
+
 		JLabel lblFondo = new JLabel("");
 		lblFondo.setBounds(0, 0, 1280, 720);
 		getContentPane().add(lblFondo);
 		lblFondo.setIcon(new ImageIcon(posicion_archivos + "/Fondo.jpg"));
 
+		panelMensajes = new JPanel(new ScrollLayout());
+		JScrollPane scrollMensajes = new JScrollPane(panelMensajes);
+		scrollMensajes.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		splitInternalMensajes.setRightComponent(scrollMensajes);
+		
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
+				if (conexion == null) {
+					return;
+				}
 				try {
+					try {
+						String nombre = ObtenerNombre(usuario);
+						lblNombre.setText(nombre);
+						lblNombre.repaint();
+						lblFondo.repaint();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 					AgregarUsuarios();
 					try {
 						String path = ObtenerFoto(usuario);
@@ -201,7 +245,25 @@ public class VentanaMensajes extends JFrame {
 			}
 		});
 		t1.start();
-		
+
+
+		Color transparente = new Color(0,0,0,0);
+		splitMensajes.setBackground(transparente);
+		splitUsuarios.setBackground(transparente);
+		splitPrincipal.setBackground(transparente);
+		splitInternalMensajes.setBackground(transparente);
+
+		panelUsuarios.setBackground(transparente);
+		scrollUsuarios.setBackground(transparente);		
+		panelEnvio.setBackground(transparente);
+		panelDatosUsuario.setBackground(transparente);
+		panelDatosOtro.setBackground(transparente);
+		panelMensajes.setBackground(transparente);
+		scrollMensajes.setBackground(transparente);
+
+		scrollMensajes.getVerticalScrollBar().addAdjustmentListener(new ScrollCambiado(lblFondo));
+		scrollUsuarios.getVerticalScrollBar().addAdjustmentListener(new ScrollCambiado(lblFondo));
+
 	}
 	
 	public void AgregarUsuario(final String usuario_) {
@@ -242,7 +304,7 @@ public class VentanaMensajes extends JFrame {
 		String nombre = "?";
 		try {
 			nombre = ObtenerNombre(usuario_);
-		} catch (SQLException e1) {
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 		JLabel label = new JLabel(nombre);
@@ -368,6 +430,7 @@ public class VentanaMensajes extends JFrame {
 		String sentencia = "select usuario from usuario where registroCompleto=1;";
 		Statement stmt_addusers = conexion.createStatement();
 		ResultSet rs = stmt_addusers.executeQuery(sentencia);
+		cantidadUsuarios = 0;
 		while (rs.next()) {
 			final String nombreUsuario = rs.getString(1);
 			if (nombreUsuario.equals(usuario)) {
@@ -379,4 +442,19 @@ public class VentanaMensajes extends JFrame {
 		}
 		
 	}
+}
+
+class ScrollCambiado implements AdjustmentListener {
+	
+	JLabel fondo;
+
+	public ScrollCambiado(JLabel lblFondo) {
+		fondo = lblFondo;
+	}
+
+	@Override
+	  public void adjustmentValueChanged(AdjustmentEvent evt) {
+	    fondo.repaint();
+	  }
+
 }

@@ -34,7 +34,7 @@ public class VentanaLogin extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private JLabel lblCatchat, lblanNoTienes, lblyaEstsRegistrado, lblNewLabel_2, lblNewLabel_3;
-	private String posicion_archivos = new File("archivos/").getAbsolutePath() + "/".replace("\\", "/");
+	private String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
 
 	public JLabel lblNewLabel, datosIncorrectos;
 	public JButton Entrar, Registrarse;

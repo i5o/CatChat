@@ -85,8 +85,9 @@ public class VentanaDatos extends JFrame {
 
 	public JComboBox < String > Sexo;
 
-	private String posicion_archivos = new File("archivos/").getAbsolutePath() + "/".replace("\\", "/");
+	private String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
 
+	
 	static String idUsuario = null;
 
 	public String pathFotoDefecto = posicion_archivos + "/fotoDefecto.png";
