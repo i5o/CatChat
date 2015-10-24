@@ -22,7 +22,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -63,8 +67,12 @@ public class VentanaMensajes extends JFrame {
 	private Map<String, JLabel> fotos = new HashMap<String, JLabel>();
 	private Map<String, String> fotosPath = new HashMap<String, String>();
 	private Map<String, String> nombreUsuarios = new HashMap<String, String>();
+	private Map<String, JButton[]> botonesListaUsuarios = new HashMap<String, JButton[]>();
+	private JSONObject mensajes = null;
+	private JSONArray mensajes_json, mensajes_antes;
 
 	private JPanel panelUsuarios, panelMensajes;
+	private Timer chequearMensajes;
 	
 	private JSplitPane splitPrincipal, splitMensajes;
 	
@@ -83,6 +91,7 @@ public class VentanaMensajes extends JFrame {
 			}
 		});
 	}
+
 	public VentanaMensajes(String usuario_, Connection conexion_) {
 		usuario = usuario_;
 		conexion = conexion_;
@@ -205,7 +214,9 @@ public class VentanaMensajes extends JFrame {
 								JLabel miLabelFoto = fotos.get(user_);
 								miLabelFoto.setIcon(CrearIcono(path, 55, 55, true, true));
 								fotosPath.put(user_, path);
-
+								JButton[] botones = botonesListaUsuarios.get(user_);
+								botones[0].setVisible(true);
+								botones[1].setVisible(true);
 							}
 						});
 						cargarFoto.start();
@@ -226,12 +237,49 @@ public class VentanaMensajes extends JFrame {
 		redibujarFondo.start();
 		
 		// Chequear mensajes nuevos
-		Timer chequearMensajes = new Timer(1000, new ActionListener() {@Override
+		chequearMensajes = new Timer(1000, new ActionListener() {@Override
+			
 			public void actionPerformed(ActionEvent e) {
 
+			String sentencia_busqueda = "select texto from Mensajes where '" + usuario + "' IN (participante1, participante2) and '" + seleccionado + "' IN (participante1, participante2);";
+			Statement stmt_;
+
+			mensajes_antes = mensajes_json;
+			String[] mensajes_antes_str = new String[mensajes_antes.length()];
+			int p = 0;
+			for (final Object x: mensajes_antes) {
+				mensajes_antes_str[p] = x.toString();
+				p++;
 			}
-		});
-		chequearMensajes.start();	
+			try {
+				stmt_ = conexion.createStatement();
+				ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
+				rs.next();
+				String jsonMensajes_ = rs.getString(1);
+			    mensajes = new JSONObject(jsonMensajes_);
+			    mensajes_json = mensajes.getJSONArray("Mensajes");
+			    
+				String[] mensajes_ahora_str = new String[mensajes_json.length()];
+				p = 0;
+				for (final Object x: mensajes_json) {
+					mensajes_ahora_str[p] = x.toString();
+					p++;
+				}
+
+				for (String x: mensajes_ahora_str) {
+					if (!Arrays.asList(mensajes_antes_str).contains(x)) {
+						mensajes_antes = mensajes_json;
+						String mensaje_json = "{\"Mensaje\": " + x + "}";
+						JSONArray mensaje = new JSONObject(mensaje_json).getJSONArray("Mensaje");
+					    CrearWidgetMensaje(mensaje.getString(0), mensaje.getString(1), mensaje.getString(2));
+					}
+				}
+
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			}
+		});	
 	}
 	
 	public void AgregarUsuario(final String usuario_) {
@@ -290,6 +338,15 @@ public class VentanaMensajes extends JFrame {
 		usuario.add(btnVaciar);
 		
 		cantidadUsuarios++;
+		
+		JButton botones[] = new JButton[2];
+		botones[0] = btnChatear;
+		botones[1] = btnVaciar;
+
+		botonesListaUsuarios.put(usuario_, botones);
+
+		btnChatear.setVisible(false);
+		btnVaciar.setVisible(false);
 		
 		JSeparator separador = new JSeparator();
 		separador.setPreferredSize(new Dimension(300, 4));
@@ -399,7 +456,6 @@ public class VentanaMensajes extends JFrame {
 		return botonSeleccion;
 	}
 	
-	
 	public String ObtenerFoto(String user) {
 		if (fotosPath.containsKey(user)) {
 			return fotosPath.get(user);
@@ -469,11 +525,11 @@ public class VentanaMensajes extends JFrame {
 		
 	}
 	
-	public void CrearWidgetMensaje(String user_, String mensaje_) {
+	public void CrearWidgetMensaje(String user_, String mensaje_, String fecha_) {
 		Color  color;
 		int x = 20;
 		if (!user_.equals(usuario)) {
-			x = 420;
+			x = 410;
 			color = new Color(72, 209, 204);
 		}
 		else {
@@ -516,10 +572,10 @@ public class VentanaMensajes extends JFrame {
 		usuario.setFont(new Font("Raleway", Font.BOLD, 15));
 		bordeFalso.add(usuario);
 		
-		JLabel fecha = new JLabel("Fecha");
+		JLabel fecha = new JLabel(fecha_);
 		fecha.setForeground(Color.WHITE);
-		fecha.setFont(new Font("Raleway", Font.PLAIN, 13));
-		fecha.setBounds(474, 2, 46, 14);
+		fecha.setFont(new Font("Raleway", Font.BOLD, 13));
+		fecha.setBounds(374, 2, 325, 14);
 		bordeFalso.add(fecha);
 		
 		JScrollPane scroll = new JScrollPane() {
@@ -620,34 +676,36 @@ public class VentanaMensajes extends JFrame {
 		btnEnviar.setBounds(917, 18, 50, 50);
 		panelEnvio.add(btnEnviar);
 
-		btnEnviar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				CrearWidgetMensaje(usuario, Mensaje.getText());
-				Mensaje.setText("");
-			}
-		});
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
-				ObtenerMensajes("ignacio2", "ignacio");
+				ObtenerMensajes(seleccionado, usuario);
 			}
 		});
 		t1.start();
+		
+		
+		btnEnviar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Date fechaActual = new Date();
+				EnviarMensaje(Mensaje.getText(), fechaActual.toLocaleString());
+				Mensaje.setText("");
+			}
+		});
 		return splitMensajes;
 	}
 	
 	public void ObtenerMensajes(String user1, String user2) {
 		String sentencia_busqueda = "select texto from Mensajes where '" + user1 + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
-		String sentencia_agregado = "INSERT INTO `Mensajes` (`participante1`, `participante2`, `texto`) VALUES (?, ?, ?);";
+		String sentencia_agregado = "INSERT INTO `Mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
 
 		Statement stmt_;
-		String jsonmensajes = "{ 'Mensajes': [ ['a', 'b'], ['e', 'f'] ] }";
-				
+		String jsonmensajes = "{ 'Mensajes': [] }";
+
 		try {
 			stmt_ = conexion.createStatement();
 			ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
 			rs.next();
 			jsonmensajes = rs.getString(1);
-
 		} catch (SQLException e) {
 			String error = e.toString();
 			if (error.contains("Illegal operation on empty result set.")) {
@@ -657,20 +715,46 @@ public class VentanaMensajes extends JFrame {
 					psmnt.setString(1, user1);
 					psmnt.setString(2, user2);
 					psmnt.setString(3, jsonmensajes);
+					psmnt.setString(4, user1 + "-" + user2);
 					psmnt.executeUpdate();
 				} catch (SQLException e1) {
+					e1.printStackTrace();
 				}
 			}
 		}
-		
 
-
-	    JSONObject obj1 = new JSONObject(jsonmensajes);
-	    JSONArray result = obj1.getJSONArray("Mensajes");
+	    mensajes = new JSONObject(jsonmensajes);
+	    mensajes_json = mensajes.getJSONArray("Mensajes");
 	    cantidadMensajes = 0;
-	    for (int m=0; m<result.length(); m++) {
-		    JSONArray d = result.getJSONArray(m);
-		    CrearWidgetMensaje(d.getString(0), d.getString(1));
+	    for (int m=0; m<mensajes_json.length(); m++) {
+		    JSONArray d = mensajes_json.getJSONArray(m);
+		    CrearWidgetMensaje(d.getString(0), d.getString(1), d.getString(2));
 	    }
+
+		chequearMensajes.start();
+	}
+	
+	public void EnviarMensaje(String mensaje, String fecha) {
+		chequearMensajes.stop();
+		String[] a = new String[3];
+		a[0] = usuario;
+		a[1] = mensaje;
+		a[2] = fecha;
+		mensajes_json.put(a);
+		mensajes_json = new JSONObject(mensajes.toString()).getJSONArray("Mensajes");
+
+	    CrearWidgetMensaje(usuario, mensaje, fecha);
+		String sentencia_guardado = "UPDATE `Mensajes` SET `texto`=? where ? IN (participante1, participante2) and ? IN (participante1, participante2);";
+		PreparedStatement psmnt = null;
+		try {
+			psmnt = conexion.prepareStatement(sentencia_guardado);
+			psmnt.setString(1, mensajes.toString());
+			psmnt.setString(2, usuario);
+			psmnt.setString(3, seleccionado);
+			psmnt.executeUpdate();
+			chequearMensajes.start();
+		} catch (SQLException e) {
+		}
+		
 	}
 }
