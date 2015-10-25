@@ -264,7 +264,7 @@ public class VentanaLogin extends JFrame {
 		getContentPane().add(lblCatchat);
 
 		//Etiqueta registrarse
-		lblanNoTienes = new JLabel("¡Aún no tienes una cuenta? ¡Regístrate!");
+		lblanNoTienes = new JLabel("¿Aún no tienes una cuenta? ¡Regístrate!");
 		lblanNoTienes.setBounds(675, 275, 690, 40);
 		lblanNoTienes.setFont(fuente_titulo_30);
 		lblanNoTienes.setForeground(new Color(255, 255, 255));
