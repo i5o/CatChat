@@ -26,6 +26,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -40,12 +41,9 @@ import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
-import javax.swing.Icon;
 
 public class VentanaDatos extends JFrame {
 
@@ -87,7 +85,7 @@ public class VentanaDatos extends JFrame {
 
 	private String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
 
-	
+
 	static String idUsuario = null;
 
 	public String pathFotoDefecto = posicion_archivos + "/fotoDefecto.png";
@@ -139,12 +137,12 @@ public class VentanaDatos extends JFrame {
 
 	private void initialize() {
 		// Tipografías
-    	Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 20);
+		Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 20);
 
-    	Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
-    	Font fuente_titulo_25 = new Font("Raleway", Font.PLAIN, 25);
-    	Font fuente_titulo_35 = new Font("Raleway", Font.PLAIN, 35);
-	
+		Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
+		Font fuente_titulo_25 = new Font("Raleway", Font.PLAIN, 25);
+		Font fuente_titulo_35 = new Font("Raleway", Font.PLAIN, 35);
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "/Saludo.png"));
 		setTitle("CatChat");
 		setBounds(100, 100, 1280, 720);
@@ -638,8 +636,6 @@ public class VentanaDatos extends JFrame {
 		ResultSet rs = stmt_datos.executeQuery(sentencia);
 		rs.next();
 
-
-		System.out.println("Datos:");
 		String nombre = rs.getString(1);
 		String apellido = rs.getString(2);
 		int edad = rs.getInt(3);

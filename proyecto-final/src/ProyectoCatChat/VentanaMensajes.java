@@ -1,5 +1,6 @@
 package ProyectoCatChat;
 
+import java.awt.Adjustable;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -9,10 +10,11 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,11 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -35,6 +35,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
@@ -42,11 +43,11 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class VentanaMensajes extends JFrame {
@@ -59,26 +60,27 @@ public class VentanaMensajes extends JFrame {
 	private static int cantidadUsuarios, cantidadMensajes, y_mensajes;
 	private static String usuario;
 	static Connection conexion = null;
-	
+
 	public JButton btnEditarDatos;
-	private JLabel fotodePerfil, lblFondo; 
+	private JLabel fotodePerfil, lblFondo;
 	private String pathMiFoto = posicion_archivos + "/ajax-loader.gif";
-	
-	private Map<String, JLabel> fotos = new HashMap<String, JLabel>();
-	private Map<String, String> fotosPath = new HashMap<String, String>();
-	private Map<String, String> nombreUsuarios = new HashMap<String, String>();
-	private Map<String, JButton[]> botonesListaUsuarios = new HashMap<String, JButton[]>();
+
+	private Map < String, JLabel > fotos = new HashMap < String, JLabel > ();
+	private Map < String, String > fotosPath = new HashMap < String, String > ();
+	private Map < String, String > nombreUsuarios = new HashMap < String, String > ();
+	private Map < String, JButton[] > botonesListaUsuarios = new HashMap < String, JButton[] > ();
 	private JSONObject mensajes = null;
 	private JSONArray mensajes_json, mensajes_antes;
 
 	private JPanel panelUsuarios, panelMensajes;
+	private JScrollPane scrollMensajes;
 	private Timer chequearMensajes;
-	
+
 	private JSplitPane splitPrincipal, splitMensajes;
-	
+
 	private String seleccionado;
 	private JButton seleccionado_btn;
-	
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -86,7 +88,6 @@ public class VentanaMensajes extends JFrame {
 					VentanaMensajes window = new VentanaMensajes("ignacio", null);
 					window.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		});
@@ -101,7 +102,7 @@ public class VentanaMensajes extends JFrame {
 	private void initialize() {
 
 		cantidadMensajes = 0;
-		
+
 		getContentPane().setBackground(new Color(30, 144, 255));
 		setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "/Saludo.png"));
 		setTitle("CatChat");
@@ -110,7 +111,7 @@ public class VentanaMensajes extends JFrame {
 		getContentPane().setLayout(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
-		
+
 		splitPrincipal = new JSplitPane();
 		splitPrincipal.setDividerLocation(300);
 		splitPrincipal.setBounds(0, 0, 1280, 692);
@@ -127,11 +128,12 @@ public class VentanaMensajes extends JFrame {
 		splitUsuarios.setBackground(new Color(0, 0, 0, 0));
 
 		splitPrincipal.setLeftComponent(splitUsuarios);
-		
+
 		panelUsuarios = new JPanel(new ScrollLayout());
 		panelUsuarios.setBackground(new Color(0, 0, 0, 0));
 
 		JScrollPane scrollUsuarios = new JScrollPane(panelUsuarios);
+		scrollUsuarios.getVerticalScrollBar().setUnitIncrement(20);
 		scrollUsuarios.setBackground(new Color(0, 0, 0, 0));
 		scrollUsuarios.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		splitUsuarios.setRightComponent(scrollUsuarios);
@@ -148,7 +150,7 @@ public class VentanaMensajes extends JFrame {
 		fotodePerfil.setHorizontalAlignment(JLabel.CENTER);
 		fotodePerfil.setIcon(CrearIcono(pathMiFoto, 30, 30, true, true));
 		fotodePerfil.setBorder(new LineBorder(new Color(255, 165, 0), 2, true));
-		
+
 		JPanel fotodePerfilMarco = new JPanel();
 		fotodePerfilMarco.setBounds(5, 4, 50, 50);
 		panelDatosUsuario.add(fotodePerfilMarco);
@@ -158,7 +160,7 @@ public class VentanaMensajes extends JFrame {
 		btnEditarDatos = CrearBotonAnimado("/editarPerfil.png", "/editarPerfil_.png");
 		btnEditarDatos.setBounds(240, 18, 20, 20);
 		panelDatosUsuario.add(btnEditarDatos);
-		
+
 		JLabel lblNombre = new JLabel("?");
 		lblNombre.setForeground(Color.WHITE);
 		lblNombre.setFont(new Font("Josefin Sans", Font.BOLD, 18));
@@ -177,18 +179,18 @@ public class VentanaMensajes extends JFrame {
 		lblinfo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblinfo.setBounds(220, 223, 538, 243);
 		panel_1.add(lblinfo);
-		
+
 		JLabel lblFotoInfo = new JLabel();
 		lblFotoInfo.setBounds(165, 11, 649, 668);
 		lblFotoInfo.setIcon(new ImageIcon(posicion_archivos + "seleccion.png"));
-		panel_1.add(lblFotoInfo);	
+		panel_1.add(lblFotoInfo);
 
 		//
 
 		lblFondo = new JLabel("");
 		lblFondo.setBounds(0, 0, 1280, 720);
 		getContentPane().add(lblFondo);
-		lblFondo.setIcon(new ImageIcon(posicion_archivos + "/Fondo.jpg"));		
+		lblFondo.setIcon(new ImageIcon(posicion_archivos + "/Fondo.jpg"));
 
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
@@ -206,7 +208,7 @@ public class VentanaMensajes extends JFrame {
 					fotosPath.put(usuario, path);
 					fotodePerfil.setIcon(CrearIcono(path, 48, 48, true, true));
 
-					for (final String user_ : fotos.keySet()) {
+					for (final String user_: fotos.keySet()) {
 						Thread cargarFoto = new Thread(new Runnable() {
 							public void run() {
 								String path;
@@ -235,56 +237,56 @@ public class VentanaMensajes extends JFrame {
 			}
 		});
 		redibujarFondo.start();
-		
+
 		// Chequear mensajes nuevos
 		chequearMensajes = new Timer(1000, new ActionListener() {@Override
-			
+
 			public void actionPerformed(ActionEvent e) {
 
-			String sentencia_busqueda = "select texto from Mensajes where '" + usuario + "' IN (participante1, participante2) and '" + seleccionado + "' IN (participante1, participante2);";
-			Statement stmt_;
+				String sentencia_busqueda = "select texto from Mensajes where '" + usuario + "' IN (participante1, participante2) and '" + seleccionado + "' IN (participante1, participante2);";
+				Statement stmt_;
 
-			mensajes_antes = mensajes_json;
-			String[] mensajes_antes_str = new String[mensajes_antes.length()];
-			int p = 0;
-			for (final Object x: mensajes_antes) {
-				mensajes_antes_str[p] = x.toString();
-				p++;
-			}
-			try {
-				stmt_ = conexion.createStatement();
-				ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
-				rs.next();
-				String jsonMensajes_ = rs.getString(1);
-			    mensajes = new JSONObject(jsonMensajes_);
-			    mensajes_json = mensajes.getJSONArray("Mensajes");
-			    
-				String[] mensajes_ahora_str = new String[mensajes_json.length()];
-				p = 0;
-				for (final Object x: mensajes_json) {
-					mensajes_ahora_str[p] = x.toString();
+				mensajes_antes = mensajes_json;
+				String[] mensajes_antes_str = new String[mensajes_antes.length()];
+				int p = 0;
+				for (final Object x: mensajes_antes) {
+					mensajes_antes_str[p] = x.toString();
 					p++;
 				}
+				try {
+					stmt_ = conexion.createStatement();
+					ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
+					rs.next();
+					String jsonMensajes_ = rs.getString(1);
+					mensajes = new JSONObject(jsonMensajes_);
+					mensajes_json = mensajes.getJSONArray("Mensajes");
 
-				for (String x: mensajes_ahora_str) {
-					if (!Arrays.asList(mensajes_antes_str).contains(x)) {
-						mensajes_antes = mensajes_json;
-						String mensaje_json = "{\"Mensaje\": " + x + "}";
-						JSONArray mensaje = new JSONObject(mensaje_json).getJSONArray("Mensaje");
-					    CrearWidgetMensaje(mensaje.getString(0), mensaje.getString(1), mensaje.getString(2));
+					String[] mensajes_ahora_str = new String[mensajes_json.length()];
+					p = 0;
+					for (final Object x: mensajes_json) {
+						mensajes_ahora_str[p] = x.toString();
+						p++;
 					}
-				}
 
-			} catch (SQLException e1) {
-				e1.printStackTrace();
+					for (String x: mensajes_ahora_str) {
+						if (!Arrays.asList(mensajes_antes_str).contains(x)) {
+							mensajes_antes = mensajes_json;
+							String mensaje_json = "{\"Mensaje\": " + x + "}";
+							JSONArray mensaje = new JSONObject(mensaje_json).getJSONArray("Mensaje");
+							CrearWidgetMensaje(mensaje.getString(0), mensaje.getString(1), mensaje.getString(2));
+						}
+					}
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 			}
-			}
-		});	
+		});
 	}
-	
+
 	public void AgregarUsuario(final String usuario_) {
 		JPanel usuario = new JPanel();
-		usuario.setBackground(new Color(0,0,0,0));
+		usuario.setBackground(new Color(0, 0, 0, 0));
 		usuario.setLayout(null);
 		usuario.setPreferredSize(new Dimension(270, 70));
 
@@ -295,7 +297,7 @@ public class VentanaMensajes extends JFrame {
 		usuario.setLocation(0, y);
 		panelUsuarios.add(usuario);
 		panelUsuarios.repaint();
-		
+
 		JLabel labelFoto = new JLabel();
 		labelFoto.setVerticalAlignment(JLabel.CENTER);
 		labelFoto.setHorizontalAlignment(JLabel.CENTER);
@@ -305,18 +307,18 @@ public class VentanaMensajes extends JFrame {
 		labelFoto.setBounds(7, 5, 58, 58);
 		labelFoto.setBorder(new LineBorder(new Color(255, 165, 0), 2, true));
 		usuario.add(labelFoto);
-		
+
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(new Color(255, 165, 0), 2, true));
 		panel.setBackground(new Color(30, 144, 255));
 		panel.setBounds(7, 5, 58, 58);
 		usuario.add(panel);
-		
+
 		JLabel lblUltMSG = new JLabel("Último mensaje");
 		lblUltMSG.setForeground(Color.WHITE);
 		lblUltMSG.setFont(new Font("Josefin Sans", Font.PLAIN, 15));
 		lblUltMSG.setBounds(75, 37, 185, 23);
-		usuario.add(lblUltMSG);
+		// usuario.add(lblUltMSG);
 		String nombre = "?";
 		try {
 			nombre = ObtenerNombre(usuario_);
@@ -330,15 +332,15 @@ public class VentanaMensajes extends JFrame {
 		usuario.add(label);
 
 		JButton btnChatear = CrearBotonChat(usuario_);
-		btnChatear.setBounds(240, 25, 20, 20);
+		btnChatear.setBounds(240, 45, 20, 20);
 		usuario.add(btnChatear);
-		
+
 		JButton btnVaciar = CrearBotonAnimado("/VaciarChat.png", "/VaciarChat_.png");
 		btnVaciar.setBounds(240, 46, 20, 20);
-		usuario.add(btnVaciar);
-		
+		// usuario.add(btnVaciar);
+
 		cantidadUsuarios++;
-		
+
 		JButton botones[] = new JButton[2];
 		botones[0] = btnChatear;
 		botones[1] = btnVaciar;
@@ -347,12 +349,12 @@ public class VentanaMensajes extends JFrame {
 
 		btnChatear.setVisible(false);
 		btnVaciar.setVisible(false);
-		
+
 		JSeparator separador = new JSeparator();
 		separador.setPreferredSize(new Dimension(300, 4));
 		int yy = y;
 		if (cantidadUsuarios > 1) {
-			yy -= 3 ;
+			yy -= 3;
 		}
 		separador.setLocation(0, yy);
 		panelUsuarios.add(separador);
@@ -380,7 +382,7 @@ public class VentanaMensajes extends JFrame {
 			return icono;
 		}
 	}
-	
+
 	public JButton CrearBotonAnimado(String fotoA, String fotoB) {
 		JButton botonAnimado = new JButton();
 		botonAnimado.setIcon(CrearIcono(posicion_archivos + fotoA, 20, 20, true, false));
@@ -391,8 +393,7 @@ public class VentanaMensajes extends JFrame {
 		botonAnimado.setBorder(BorderFactory.createEmptyBorder());
 
 		Timer iconoPresionado = new Timer(150, null);
-		iconoPresionado.addActionListener(new ActionListener() 
-		{@Override
+		iconoPresionado.addActionListener(new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				botonAnimado.setIcon(CrearIcono(posicion_archivos + fotoA, 20, 20, true, false));
 				iconoPresionado.stop();
@@ -403,22 +404,19 @@ public class VentanaMensajes extends JFrame {
 				botonAnimado.setIcon(CrearIcono(posicion_archivos + fotoB, 20, 20, true, false));
 				iconoPresionado.restart();
 			}
-		});		
+		});
 
-		botonAnimado.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                setCursor(handCursor);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-            	setCursor(defaultCursor);
-            }
+		botonAnimado.addMouseListener(new MouseAdapter() {@Override
+			public void mouseEntered(MouseEvent e) {
+				setCursor(handCursor);
+			}@Override
+			public void mouseExited(MouseEvent e) {
+				setCursor(defaultCursor);
+			}
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-        });
+			@Override
+			public void mouseClicked(MouseEvent e) {}
+		});
 		return botonAnimado;
 	}
 
@@ -441,21 +439,19 @@ public class VentanaMensajes extends JFrame {
 				seleccionado_btn = botonSeleccion;
 				splitPrincipal.setRightComponent(CrearListaMensajes(usuario));
 			}
-		});		
+		});
 
-		botonSeleccion.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                setCursor(handCursor);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-            	setCursor(defaultCursor);
-            }
-        });
+		botonSeleccion.addMouseListener(new MouseAdapter() {@Override
+			public void mouseEntered(MouseEvent e) {
+				setCursor(handCursor);
+			}@Override
+			public void mouseExited(MouseEvent e) {
+				setCursor(defaultCursor);
+			}
+		});
 		return botonSeleccion;
 	}
-	
+
 	public String ObtenerFoto(String user) {
 		if (fotosPath.containsKey(user)) {
 			return fotosPath.get(user);
@@ -468,7 +464,7 @@ public class VentanaMensajes extends JFrame {
 
 			ResultSet rs = stmt_.executeQuery(sentencia);
 			rs.next();
-			
+
 			Blob datosFoto = rs.getBlob(1);
 			String extImage = rs.getString(2);
 
@@ -482,13 +478,12 @@ public class VentanaMensajes extends JFrame {
 			}
 
 			path = temp.getAbsolutePath();
-		} catch (SQLException | IOException e) {
-		}
-		
+		} catch (SQLException | IOException e) {}
+
 		return path;
 	}
-	
-	public String ObtenerNombre(String user){
+
+	public String ObtenerNombre(String user) {
 		if (nombreUsuarios.containsKey(user)) {
 			return nombreUsuarios.get(user);
 		}
@@ -502,12 +497,11 @@ public class VentanaMensajes extends JFrame {
 			rs.next();
 			nombre = rs.getString(1) + " " + rs.getString(2);
 			nombreUsuarios.put(user, nombre);
-		} catch (SQLException e) {
-		}
+		} catch (SQLException e) {}
 
 		return nombre;
 	}
-	
+
 	public void AgregarUsuarios() throws SQLException {
 		String sentencia = "select usuario from usuario where registroCompleto=1;";
 		Statement stmt_addusers = conexion.createStatement();
@@ -522,17 +516,16 @@ public class VentanaMensajes extends JFrame {
 			panelUsuarios.revalidate();
 			panelUsuarios.repaint();
 		}
-		
+
 	}
-	
+
 	public void CrearWidgetMensaje(String user_, String mensaje_, String fecha_) {
-		Color  color;
+		Color color;
 		int x = 20;
 		if (!user_.equals(usuario)) {
 			x = 410;
 			color = new Color(72, 209, 204);
-		}
-		else {
+		} else {
 
 			color = new Color(30, 144, 255);
 		}
@@ -541,13 +534,13 @@ public class VentanaMensajes extends JFrame {
 		if (cantidadMensajes > 0) {
 			y_mensajes += 120 * cantidadMensajes;
 		}
-		
+
 		String nombreUser_ = ObtenerNombre(user_);
 
 		cantidadMensajes++;
 		JPanel Mensaje = new JPanel();
 		Mensaje.setPreferredSize(new Dimension(535, 100));
-		Mensaje.setBackground(new Color(0,0,0,0));
+		Mensaje.setBackground(new Color(0, 0, 0, 0));
 		Mensaje.setBorder(new LineBorder(color, 3));
 		Mensaje.setLocation(x, y_mensajes);
 		Mensaje.setLayout(null);
@@ -558,34 +551,36 @@ public class VentanaMensajes extends JFrame {
 		fotoBorde1.setBounds(13, 26, 60, 60);
 		fotoBorde1.setIcon(CrearIcono(ObtenerFoto(user_), 60, 60, true, false));
 		Mensaje.add(fotoBorde1);
-		
+
 		JPanel bordeFalso = new JPanel();
 		bordeFalso.setBounds(0, 0, 535, 19);
 		Mensaje.add(bordeFalso);
 		bordeFalso.setBackground(color);
 		bordeFalso.setLayout(null);
-		
+
 		JLabel usuario = new JLabel(nombreUser_ + " dice:");
 		usuario.setBounds(10, 0, 510, 19);
 		usuario.setHorizontalAlignment(SwingConstants.LEFT);
 		usuario.setForeground(Color.WHITE);
 		usuario.setFont(new Font("Raleway", Font.BOLD, 15));
 		bordeFalso.add(usuario);
-		
+
 		JLabel fecha = new JLabel(fecha_);
 		fecha.setForeground(Color.WHITE);
 		fecha.setFont(new Font("Raleway", Font.BOLD, 13));
-		fecha.setBounds(374, 2, 325, 14);
+		fecha.setBounds(350, 2, 350, 14);
 		bordeFalso.add(fecha);
-		
+
 		JScrollPane scroll = new JScrollPane() {
-			@Override public void setBorder(Border border) {
-			}
+			private static final long serialVersionUID = 1L;
+
+		@Override public void setBorder(Border border) {}
 		};
+		
 		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBounds(81, 21, 446, 72);
 		Mensaje.add(scroll);
-		
+
 		JTextArea mensaje = new JTextArea(mensaje_);
 		mensaje.setSize(50, 70);
 		mensaje.setLocation(21, 0);
@@ -600,19 +595,19 @@ public class VentanaMensajes extends JFrame {
 		panelMensajes.add(Mensaje);
 		panelMensajes.revalidate();
 		panelMensajes.repaint();
-	
+		irAbajo(scrollMensajes);
 	}
-	
+
 	public JSplitPane CrearListaMensajes(String user_) {
 		cantidadMensajes = 0;
-		
+
 		splitMensajes = new JSplitPane();
 		splitMensajes.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitMensajes.setDividerSize(2);
 		splitMensajes.setEnabled(false);
 		splitMensajes.setDividerLocation(600);
 		splitMensajes.setBackground(new Color(0, 0, 0, 0));
-		
+
 
 		JSplitPane splitInternalMensajes = new JSplitPane();
 		splitInternalMensajes.setBackground(new Color(0, 0, 0, 0));
@@ -621,12 +616,12 @@ public class VentanaMensajes extends JFrame {
 		splitInternalMensajes.setDividerSize(2);
 		splitInternalMensajes.setEnabled(false);
 		splitInternalMensajes.setDividerLocation(60);
-			
+
 		JPanel panelDatosOtro = new JPanel();
 		panelDatosOtro.setBackground(new Color(0, 0, 0, 0));
 		splitInternalMensajes.setLeftComponent(panelDatosOtro);
 		panelDatosOtro.setLayout(null);
-		
+
 		JLabel label = new JLabel();
 		label.setIcon(CrearIcono(ObtenerFoto(seleccionado), 50, 50, true, false));
 		label.setVerticalAlignment(SwingConstants.CENTER);
@@ -634,13 +629,13 @@ public class VentanaMensajes extends JFrame {
 		label.setBorder(new LineBorder(new Color(255, 165, 0), 2, true));
 		label.setBounds(882, 4, 50, 50);
 		panelDatosOtro.add(label);
-		
+
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(new Color(30, 144, 255), 1, true));
 		panel.setBackground(new Color(30, 144, 255));
 		panel.setBounds(882, 4, 50, 50);
 		panelDatosOtro.add(panel);
-		
+
 		JLabel lblNombre1 = new JLabel("Hablando con: " + ObtenerNombre(seleccionado));
 		lblNombre1.setBounds(59, 14, 600, 30);
 		panelDatosOtro.add(lblNombre1);
@@ -649,7 +644,8 @@ public class VentanaMensajes extends JFrame {
 
 		panelMensajes = new JPanel(new ScrollLayout());
 		panelMensajes.setBackground(new Color(0, 0, 0, 0));
-		JScrollPane scrollMensajes = new JScrollPane(panelMensajes);
+		scrollMensajes = new JScrollPane(panelMensajes);
+		scrollMensajes.getVerticalScrollBar().setUnitIncrement(20);
 		scrollMensajes.setBackground(new Color(0, 0, 0, 0));
 		scrollMensajes.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		splitInternalMensajes.setRightComponent(scrollMensajes);
@@ -658,21 +654,22 @@ public class VentanaMensajes extends JFrame {
 		panelEnvio.setBackground(new Color(0, 0, 0, 0));
 		splitMensajes.setRightComponent(panelEnvio);
 		panelEnvio.setLayout(null);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBackground(new Color(0, 0, 0, 0));
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBounds(0, 0, 913, 87);
 		panelEnvio.add(scrollPane);
-		
+
 		JTextArea Mensaje = new JTextArea();
 		Placeholder Mensaje_pl = new Placeholder("Escriba el mensaje a enviar", Mensaje, true);
 		Mensaje_pl.changeAlpha(0.4f);
 		Mensaje.setLineWrap(true);
 		Mensaje.setLocation(487, 0);
 		scrollPane.setViewportView(Mensaje);
-		
+		ToolTipManager.sharedInstance().setInitialDelay(0);
 		JButton btnEnviar = CrearBotonAnimado("/Enviar.png", "/Enviar_.png");
+		btnEnviar.setToolTipText("Click para enviar.");
 		btnEnviar.setBounds(917, 18, 50, 50);
 		panelEnvio.add(btnEnviar);
 
@@ -682,18 +679,24 @@ public class VentanaMensajes extends JFrame {
 			}
 		});
 		t1.start();
-		
-		
+
+
 		btnEnviar.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				Date fechaActual = new Date();
-				EnviarMensaje(Mensaje.getText(), fechaActual.toLocaleString());
+				String x = Mensaje.getText();
+				if (x.isEmpty() || x == null || x.trim().isEmpty()) {
+					Toolkit.getDefaultToolkit().beep();
+					return;
+				}
+				EnviarMensaje(x, fechaActual.toLocaleString());
 				Mensaje.setText("");
 			}
 		});
 		return splitMensajes;
 	}
-	
+
 	public void ObtenerMensajes(String user1, String user2) {
 		String sentencia_busqueda = "select texto from Mensajes where '" + user1 + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
 		String sentencia_agregado = "INSERT INTO `Mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
@@ -718,22 +721,21 @@ public class VentanaMensajes extends JFrame {
 					psmnt.setString(4, user1 + "-" + user2);
 					psmnt.executeUpdate();
 				} catch (SQLException e1) {
-					e1.printStackTrace();
 				}
 			}
 		}
 
-	    mensajes = new JSONObject(jsonmensajes);
-	    mensajes_json = mensajes.getJSONArray("Mensajes");
-	    cantidadMensajes = 0;
-	    for (int m=0; m<mensajes_json.length(); m++) {
-		    JSONArray d = mensajes_json.getJSONArray(m);
-		    CrearWidgetMensaje(d.getString(0), d.getString(1), d.getString(2));
-	    }
+		mensajes = new JSONObject(jsonmensajes);
+		mensajes_json = mensajes.getJSONArray("Mensajes");
+		cantidadMensajes = 0;
+		for (int m = 0; m < mensajes_json.length(); m++) {
+			JSONArray d = mensajes_json.getJSONArray(m);
+			CrearWidgetMensaje(d.getString(0), d.getString(1), d.getString(2));
+		}
 
 		chequearMensajes.start();
 	}
-	
+
 	public void EnviarMensaje(String mensaje, String fecha) {
 		chequearMensajes.stop();
 		String[] a = new String[3];
@@ -743,7 +745,7 @@ public class VentanaMensajes extends JFrame {
 		mensajes_json.put(a);
 		mensajes_json = new JSONObject(mensajes.toString()).getJSONArray("Mensajes");
 
-	    CrearWidgetMensaje(usuario, mensaje, fecha);
+		CrearWidgetMensaje(usuario, mensaje, fecha);
 		String sentencia_guardado = "UPDATE `Mensajes` SET `texto`=? where ? IN (participante1, participante2) and ? IN (participante1, participante2);";
 		PreparedStatement psmnt = null;
 		try {
@@ -753,8 +755,19 @@ public class VentanaMensajes extends JFrame {
 			psmnt.setString(3, seleccionado);
 			psmnt.executeUpdate();
 			chequearMensajes.start();
-		} catch (SQLException e) {
-		}
-		
+		} catch (SQLException e) {}
+	}
+
+	private void irAbajo(JScrollPane scrollPane) {
+	    JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+	    AdjustmentListener downScroller = new AdjustmentListener() {
+	        @Override
+	        public void adjustmentValueChanged(AdjustmentEvent e) {
+	            Adjustable adjustable = e.getAdjustable();
+	            adjustable.setValue(adjustable.getMaximum());
+	            verticalBar.removeAdjustmentListener(this);
+	        }
+	    };
+	    verticalBar.addAdjustmentListener(downScroller);
 	}
 }

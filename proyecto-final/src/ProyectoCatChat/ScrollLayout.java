@@ -7,28 +7,23 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 
-public class ScrollLayout implements LayoutManager, java.io.Serializable
-{
+public class ScrollLayout implements LayoutManager, java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private boolean usePreferredSize;
 
-	public ScrollLayout()
-	{
+	public ScrollLayout() {
 		this(true);
 	}
 
-	public ScrollLayout(boolean usePreferredSize)
-	{
-		setUsePreferredSize( usePreferredSize );
+	public ScrollLayout(boolean usePreferredSize) {
+		setUsePreferredSize(usePreferredSize);
 	}
 
-	public void setUsePreferredSize(boolean usePreferredSize)
-	{
+	public void setUsePreferredSize(boolean usePreferredSize) {
 		this.usePreferredSize = usePreferredSize;
 	}
 
-	public boolean isUsePreferredSize()
-	{
+	public boolean isUsePreferredSize() {
 		return usePreferredSize;
 	}
 
@@ -36,40 +31,31 @@ public class ScrollLayout implements LayoutManager, java.io.Serializable
 	public void addLayoutComponent(String name, Component comp) {}
 
 	@Override
-	public void removeLayoutComponent(Component component)
-	{
-	}
+	public void removeLayoutComponent(Component component) {}
 
 	@Override
-	public Dimension minimumLayoutSize(Container parent)
-	{
-		synchronized (parent.getTreeLock())
-		{
+	public Dimension minimumLayoutSize(Container parent) {
+		synchronized(parent.getTreeLock()) {
 			return preferredLayoutSize(parent);
 		}
 	}
 
 	@Override
-	public Dimension preferredLayoutSize(Container parent)
-	{
-		synchronized (parent.getTreeLock())
-		{
+	public Dimension preferredLayoutSize(Container parent) {
+		synchronized(parent.getTreeLock()) {
 			return getLayoutSize(parent);
 		}
 	}
 
-	private Dimension getLayoutSize(Container parent)
-	{
+	private Dimension getLayoutSize(Container parent) {
 		Insets parentInsets = parent.getInsets();
 		int x = parentInsets.left;
 		int y = parentInsets.top;
 		int width = 0;
 		int height = 0;
 
-		for (Component component: parent.getComponents())
-		{
-			if (component.isVisible())
-			{
+		for (Component component: parent.getComponents()) {
+			if (component.isVisible()) {
 				Point p = component.getLocation();
 				Dimension d = getActualSize(component);
 				x = Math.min(x, p.x);
@@ -79,11 +65,9 @@ public class ScrollLayout implements LayoutManager, java.io.Serializable
 			}
 		}
 
-		if (x < parentInsets.left)
-			width += parentInsets.left - x;
+		if (x < parentInsets.left) width += parentInsets.left - x;
 
-		if (y < parentInsets.top)
-			height += parentInsets.top - y;
+		if (y < parentInsets.top) height += parentInsets.top - y;
 
 		width += parentInsets.right;
 		height += parentInsets.bottom;
@@ -92,65 +76,53 @@ public class ScrollLayout implements LayoutManager, java.io.Serializable
 		return d;
 	}
 
-	private Dimension getActualSize(Component component)
-	{
-		if (usePreferredSize)
-			return component.getPreferredSize();
+	private Dimension getActualSize(Component component) {
+		if (usePreferredSize) return component.getPreferredSize();
 
 		Dimension d = component.getSize();
 
-		if (d.width == 0 || d.height == 0)
-			return component.getPreferredSize();
-		else
-			return d;
+		if (d.width == 0 || d.height == 0) return component.getPreferredSize();
+		else return d;
 	}
 
 
 	@Override
-	public void layoutContainer(Container parent)
-	{
-	synchronized (parent.getTreeLock())
-	{
-		Insets parentInsets = parent.getInsets();
+	public void layoutContainer(Container parent) {
+		synchronized(parent.getTreeLock()) {
+			Insets parentInsets = parent.getInsets();
 
-		int x = parentInsets.left;
-		int y = parentInsets.top;
+			int x = parentInsets.left;
+			int y = parentInsets.top;
 
-		//  Get x/y location of any component outside the bounds of the panel.
-		//  All components will be adjust by the x/y values, if necessary.
+			//  Get x/y location of any component outside the bounds of the panel.
+			//  All components will be adjust by the x/y values, if necessary.
 
-		for (Component component: parent.getComponents())
-		{
-			if (component.isVisible())
-			{
-				Point location = component.getLocation();
-				x = Math.min(x, location.x);
-				y = Math.min(y, location.y);
+			for (Component component: parent.getComponents()) {
+				if (component.isVisible()) {
+					Point location = component.getLocation();
+					x = Math.min(x, location.x);
+					y = Math.min(y, location.y);
+				}
+			}
+
+			x = (x < parentInsets.left) ? parentInsets.left - x : 0;
+			y = (y < parentInsets.top) ? parentInsets.top - y : 0;
+
+			//  Set bounds of each component
+
+			for (Component component: parent.getComponents()) {
+				if (component.isVisible()) {
+					Point p = component.getLocation();
+					Dimension d = getActualSize(component);
+
+					component.setBounds(p.x + x, p.y + y, d.width, d.height);
+				}
 			}
 		}
-
-		x = (x < parentInsets.left) ? parentInsets.left - x : 0;
-		y = (y < parentInsets.top) ? parentInsets.top - y : 0;
-
-		//  Set bounds of each component
-
-		for (Component component: parent.getComponents())
-		{
-			if (component.isVisible())
-			{
-				Point p = component.getLocation();
-				Dimension d = getActualSize(component);
-
-				component.setBounds(p.x + x, p.y + y, d.width, d.height);
-			}
-		}
-	}}
+	}
 
 	@Override
-	public String toString()
-	{
-		return "["
-			+ getClass().getName()
-			+ "]";
+	public String toString() {
+		return "[" + getClass().getName() + "]";
 	}
 }

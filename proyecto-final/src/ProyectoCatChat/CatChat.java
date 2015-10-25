@@ -22,28 +22,22 @@ public class CatChat {
 	static String posicion_archivos = new File("archivos/").getAbsolutePath() + "\\";
 	static Connection conexion = null;
 
-	static boolean Desarrollo;
-
 	static VentanaLogin ventanaLogin;
 	static VentanaDatos ventanaDatos;
 	static VentanaMensajes ventanaMensajes;
 	static String Usuario;
-	
+
 	static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
 	static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	static Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
 	public static void main(String[] args) {
-		Desarrollo = true;
 
 		try {
 			EstablecerConexionMySql();
 		} catch (SQLException e) {
-			if (!Desarrollo) {
-				e.printStackTrace();
-				System.out.println("Imposible conectar a la base de datos.\nSi no hay conexión, no hay programa :/");
-				System.exit(0);
-			}
+			System.out.println("Imposible conectar a la base de datos.\nSi no hay conexión, no hay programa :/");
+			System.exit(0);
 		}
 		ventanaLogin = new VentanaLogin();
 		ventanaLogin.setVisible(true);
@@ -58,7 +52,6 @@ public class CatChat {
 					llamarVentanaDatos();
 
 				} catch (SQLException | IOException e) {
-					e.printStackTrace();
 				}
 			}
 		});
@@ -74,7 +67,6 @@ public class CatChat {
 						}
 					}
 				} catch (SQLException e) {
-					e.printStackTrace();
 				}
 			}
 		});
@@ -201,7 +193,7 @@ public class CatChat {
 		VentanaDatos ventanaDatos = new VentanaDatos(Usuario, conexion);
 		ventanaDatos.setVisible(true);
 
-		ventanaDatos.Siguiente.addActionListener(new ActionListener() {
+		VentanaDatos.Siguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Thread t1 = new Thread(new Runnable() {
 					public void run() {
@@ -211,7 +203,6 @@ public class CatChat {
 							ventanaDatos.dispose();
 							llamarVentanaMensajes();
 						} catch (SQLException | IOException e) {
-							e.printStackTrace();
 						}
 					}
 				});
@@ -225,24 +216,22 @@ public class CatChat {
 		ventanaMensajes = new VentanaMensajes(Usuario, conexion);
 		ventanaMensajes.setVisible(true);
 
-		ventanaMensajes.btnEditarDatos.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            	ventanaMensajes.setCursor(handCursor);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-            	ventanaMensajes.setCursor(defaultCursor);
-            }
+		ventanaMensajes.btnEditarDatos.addMouseListener(new MouseAdapter() {@Override
+			public void mouseEntered(MouseEvent e) {
+				ventanaMensajes.setCursor(handCursor);
+			}@Override
+			public void mouseExited(MouseEvent e) {
+				ventanaMensajes.setCursor(defaultCursor);
+			}
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            	llamarVentanaDatos();
-            	ventanaMensajes.dispose();
-            }
-        });
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				llamarVentanaDatos();
+				ventanaMensajes.dispose();
+			}
+		});
 	}
-	
+
 	public static boolean DebeLlenarDatos() throws SQLException {
 		boolean debe = false;
 		String sentencia = "select registroCompleto from usuario where usuario='" + Usuario + "';";

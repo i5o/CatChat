@@ -45,7 +45,7 @@ public class VentanaLogin extends JFrame {
 	ImageIcon iconoAlertaEntry;
 
 	DocumentListener chequearTexto;
-	
+
 	public JLabel EmailEnUso, UsuarioEnUso;
 
 	Color colorLabel = Color.decode("#EF6161");
@@ -73,12 +73,12 @@ public class VentanaLogin extends JFrame {
 
 	private void initialize() {
 		// Tipografías
-    	Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 25);
-    	Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
-    	Font fuente_titulo_30 = new Font("Raleway", Font.PLAIN, 30);
-    	Font fuente_titulo_55 = new Font("Raleway", Font.PLAIN, 55);
+		Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 25);
+		Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
+		Font fuente_titulo_30 = new Font("Raleway", Font.PLAIN, 30);
+		Font fuente_titulo_55 = new Font("Raleway", Font.PLAIN, 55);
 
-		
+
 		getContentPane().setBackground(SystemColor.activeCaption);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "/Saludo.png"));
 		setTitle("CatChat");
@@ -358,7 +358,7 @@ public class VentanaLogin extends JFrame {
 
 		lblNewLabel_2 = new JLabel();
 		lblNewLabel_2.setIcon(new ImageIcon(posicion_archivos + "Pintando.png"));
-		lblNewLabel_2.setBounds(1136, 559, 318, 259);
+		lblNewLabel_2.setBounds(956, 449, 318, 259);
 		getContentPane().add(lblNewLabel_2);
 
 		datosIncorrectos = new JLabel("Datos incorrectos");
