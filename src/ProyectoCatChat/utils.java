@@ -38,32 +38,57 @@ public class utils {
         conexion = conexion_;
     }
 
-    @SuppressWarnings("resource")
+    /*
+     * Función que devuelve el path de la foto
+     * Dicha foto se encuentra en la base de dato.
+     * Toma como parámetro el usuario
+     */
     public static String ObtenerFoto(String usuario) throws SQLException, IOException, NullPointerException {
+        // sentencia sql que selecciona la foto y su extensión.
         String sentencia = "select foto,extImagen from perfil where usuario='" + usuario + "';";
+        // Se crea el intérprete
         Statement stmt_foto = conexion.createStatement();
+        // Se ejecuta la consulta.
         ResultSet rs = stmt_foto.executeQuery(sentencia);
 
+        // utilizo next(), para chequear de que hay un dato, de lo contrario se
+        // lanza un error.
         rs.next();
+
+        // obtengo la extensión de la imagen
         String extImage = rs.getString(2);
 
+        // Si la extensión de la imagen es nula, la foto aún no fue puesta
         if (extImage.equals("")) {
+            // por lo que se devuelve un path no existente
             return "?";
         }
 
+        // obtenemos los datos Blob (tipo de dato para guardar fotos)
         Blob datosFoto = rs.getBlob(1);
 
+        // Creo un archivo temporal
         File temp = File.createTempFile("tempFotoCatChat", extImage);
+        // y obtengo los datos de la foto (desde la base de datos)
         InputStream is = datosFoto.getBinaryStream();
+        // Lo usamos para escribir datos
         FileOutputStream fos = new FileOutputStream(temp);
+
+        // Escribo los datos al archivo
         int b = 0;
         while ((b = is.read()) != -1) {
             fos.write(b);
         }
 
+        // Devuelvo el path de la foto
         return temp.getAbsolutePath();
     }
 
+    /*
+     * Función que devuelve una matriz con los datos del usuario
+     * para la ventana de edición de datos.
+     * Toma como parámetro el usuario
+     */
     public static Object[] ObtenerDatosEdicion(String usuario) throws SQLException {
         String sentencia = "select nombre,apellido,edad,ciudad,sexo from perfil where usuario='" + usuario + "';";
         Statement stmt_datos = conexion.createStatement();
@@ -81,6 +106,11 @@ public class utils {
         return datos;
     }
 
+    /*
+     * Se encarga de "acomodar" la ventana
+     * Es decir, le da el título, el icono y la posiciona
+     * Toma como parámetro la ventana
+     */
     public static void Acomodar(JFrame ventana) {
         ventana.setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "icono.png"));
         ventana.setTitle("CatChat");
@@ -91,6 +121,16 @@ public class utils {
         ventana.setLocationRelativeTo(null);
     }
 
+    /*
+     * Crea un ImageIcon redimensionado.
+     * Es decir, redimensiona una imagen y la devuelve para poder
+     * ser usada en botones, labels, etc.
+     * Toma como parámetros:
+     * - path de la foto
+     * - largo de la foto
+     * - ancho de la fonto
+     * - si se quiere redimensionar, o no
+     */
     public static ImageIcon CrearIcono(String path, int largo, int ancho, boolean redimensionar) {
         ImageIcon icono = new ImageIcon(path);
         if (redimensionar) {
@@ -100,8 +140,7 @@ public class utils {
             }
             Image img = icono.getImage();
             Image newimg = img.getScaledInstance(largo, ancho, escalado);
-            ImageIcon new_icono = new ImageIcon(newimg);
-            return new_icono;
+            return new ImageIcon(newimg);
 
         }
         else {
@@ -109,6 +148,12 @@ public class utils {
         }
     }
 
+    /*
+     * Crea y devuelve un JLabel que hace de "alerta"
+     * Toma como parámetros:
+     * - xTooltip, la distancia desde el mouse en el eje X (para el tooltip)
+     * - yTooltip, la distancia desde el mouse en el eje Y (para el tooltip)
+     */
     public static JLabel CrearAlertaEntry(final int xTooltip, final int yTooltip) {
         ImageIcon iconoAlertaEntry = CrearIcono(iconoAlertaEntry_path, 20, 20, true);
 
@@ -124,14 +169,23 @@ public class utils {
         return Alerta;
     }
 
+    /*
+     * Devuelve el nombre y el apellido (separados por un espacio)
+     * de x usuario desde la base de datos.
+     * Toma como parámetros el usuario.
+     */
     public static String ObtenerNombre(String user) {
+        // sentencia sql que selecciona el nombre y el apellido
         String sentencia = "select nombre,apellido from perfil where usuario='" + user + "';";
-        Statement stmt_;
+
+        // El nombre por defecto es "?", significando que no se pudo cargar el nombre.
         String nombre = "?";
         try {
-            stmt_ = conexion.createStatement();
+            // Creo intérprete y ejecuto la consulta.
+            Statement stmt_ = conexion.createStatement();
             ResultSet rs = stmt_.executeQuery(sentencia);
             rs.next();
+            // Obtengo el nombre.
             nombre = rs.getString(1) + " " + rs.getString(2);
         }
         catch (SQLException e) {
@@ -140,30 +194,41 @@ public class utils {
         return nombre;
     }
 
+    /*
+     * Devuelve el JSON con los mensajes obtenido desde la base de datos
+     * Toma como parámetros el participante1, y el participante2.
+     */
     public static String ObtenerMensajes(String user1, String user2) {
+        // Sentencias que permiten buscar y agregar código JSON
         String sentencia_busqueda = "select texto from mensajes where '" + user1
                 + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
         String sentencia_agregado = "INSERT INTO `mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
 
-        Statement stmt_;
+        // El String json por defecto ( en caso de que falle. )
         String jsonmensajes = "{ 'Mensajes': [] }";
 
         try {
-            stmt_ = conexion.createStatement();
+            // Intérprete & ejecutar consulta
+            Statement stmt_ = conexion.createStatement();
             ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
             rs.next();
+            // INTENTO obtener los mensajes.
             jsonmensajes = rs.getString(1);
         }
         catch (SQLException e) {
+            // Falló obteniendo mensajes, quiere decir que aún no han chateado.
             String error = e.toString();
+            // Se crea un registro nuevo en la base de datos.
             if (error.contains("Illegal operation on empty result set.")) {
                 PreparedStatement psmnt;
                 try {
+                    // Se crea una consulta, y se le agregan los valores.
                     psmnt = conexion.prepareStatement(sentencia_agregado);
                     psmnt.setString(1, user1);
                     psmnt.setString(2, user2);
                     psmnt.setString(3, jsonmensajes);
                     psmnt.setString(4, user1 + "-" + user2);
+                    // Se ejecuta dicha consulta.
                     psmnt.executeUpdate();
                 }
                 catch (SQLException e1) {
@@ -171,33 +236,58 @@ public class utils {
             }
         }
 
+        // Se devuelve el json
         return jsonmensajes;
     }
 
+    /*
+     * Guarda el json en la base de datos, para luego poder ser cargado.
+     * Toma como parámetros:
+     * - JSONObject mensajes, los mensajes en formato JSON.
+     * - participante1
+     * - participante2
+     */
     public static void GuardarMensajes(JSONObject mensajes, String user1, String user2) {
+        // sentencia sql que permite actualizar la informacion
         String sentencia_guardado = "UPDATE `mensajes` SET `texto`=? where ? IN (participante1, participante2) and ? IN (participante1, participante2);";
-        PreparedStatement psmnt = null;
+
         try {
-            psmnt = conexion.prepareStatement(sentencia_guardado);
+            // Creo la consulta
+            PreparedStatement psmnt = conexion.prepareStatement(sentencia_guardado);
+            // Seteo valores
             psmnt.setString(1, mensajes.toString());
             psmnt.setString(2, user1);
             psmnt.setString(3, user2);
+            // Ejecuto consulta
             psmnt.executeUpdate();
         }
         catch (SQLException e) {
         }
     }
 
+    /*
+     * Obtengo los usuarios que han completado su registro
+     * No toma parámetros.
+     * Devuelve un ArrayList con los nombres de los usuarios.
+     */
     public static ArrayList<String> ObtenerUsuarios() {
+        // sentencia sql que me permite conocer los usuarios que han completado el registro
         String sentencia = "select usuario from perfil where registroCompleto=1;";
-        Statement stmt_addusers;
+
         ArrayList<String> usuarios = null;
+
         try {
-            stmt_addusers = conexion.createStatement();
+            // Creo la consulta
+            Statement stmt_addusers = conexion.createStatement();
+            // Ejecuto la consulta
             ResultSet rs = stmt_addusers.executeQuery(sentencia);
+            // redefino el arraylist.
             usuarios = new ArrayList<String>();
-            while (rs.next()) {
+
+            while (rs.next()) { // mientras que haya un usuario siguiente
+                // Obtengo el nombre
                 String nombreUsuario = rs.getString(1);
+                // y lo guardo
                 usuarios.add(nombreUsuario);
             }
 
@@ -205,10 +295,21 @@ public class utils {
         catch (SQLException e) {
         }
 
+        // devuelvo el ArrayList con los datos
         return usuarios;
     }
 
+    /*
+     * Comparo el array viejo de los mensajes, y obtengo el nuevo
+     * Devuelvo la diferencia de ellos
+     * Usado para obtener los mensajes nuevos
+     * Toma como parámetros:
+     * - El array de mensajes "viejo"
+     * - participante1
+     * - participante2
+     */
     public static String[] MensajesNuevos(JSONArray mensajes_antes, String user1, String user2) {
+        // Paso todos los mensajes viejos en formato texto y los guardo en un array
         String[] mensajes_antes_str = new String[mensajes_antes.length()];
         int p = 0;
         for (final Object x : mensajes_antes) {
@@ -216,10 +317,14 @@ public class utils {
             p++;
         }
 
+        // Obtengo los mensajes nuevos
         String jsonMensajes_ = ObtenerMensajes(user1, user2);
+        // Creo un objeto json con dichos mensajes
         JSONObject mensajes = new JSONObject(jsonMensajes_);
+        // Obtengo el json específico de los mensajes
         JSONArray mensajes_json = mensajes.getJSONArray("Mensajes");
 
+        // Paso todos los mensajes en formato texto y los guardo en un array
         String[] mensajes_ahora_str = new String[mensajes_json.length()];
         p = 0;
         for (final Object x : mensajes_json) {
@@ -227,21 +332,26 @@ public class utils {
             p++;
         }
 
+        // Creo un array para los mensajes nuevos.
         String[] mensajes_json_nuevos = new String[mensajes_json.length()];
 
+        // Variable xy, solo para saber la posición
         int xy = 0;
-        for (String x : mensajes_ahora_str) {
-            if (!Arrays.asList(mensajes_antes_str).contains(x)) {
-                mensajes_antes = mensajes_json;
-                mensajes_json_nuevos[xy] = "{\"Mensaje\": " + x + "}";
+        for (String x : mensajes_ahora_str) { // for para los items de mensajes nuevos.
+            if (!Arrays.asList(mensajes_antes_str).contains(x)) { // Si los mensajes anteriores no contienen este mensaje nuevo
+                mensajes_json_nuevos[xy] = "{\"Mensaje\": " + x + "}"; // Creo un String simulando un json con el mensaje nuevo
                 xy++;
             }
         }
 
+        // devuelvo los mensajes nuevos
         return mensajes_json_nuevos;
     }
 
-    public static boolean CampoVacio(String campo, String valor) {
+    /*
+     * Devuelve si el campo 'x' con el valor 'y', está siendo usado.
+     */
+    public static boolean CampoUsado(String campo, String valor) {
         String sentencia = "select " + campo + " from perfil where " + campo + "='" + valor + "';";
         Statement stmt_datosvacios;
         try {
@@ -271,11 +381,11 @@ public class utils {
         String nuevoUsuario = ventana.nuevoUsuario.getText();
 
         boolean algoUsado = false;
-        if (!CampoVacio("email", nuevoEmail)) {
+        if (CampoUsado("email", nuevoEmail)) {
             algoUsado = true;
             ventana.EmailEnUso.setVisible(true);
         }
-        if (!CampoVacio("usuario", nuevoUsuario)) {
+        if (CampoUsado("usuario", nuevoUsuario)) {
             algoUsado = true;
             ventana.UsuarioEnUso.setVisible(true);
         }
