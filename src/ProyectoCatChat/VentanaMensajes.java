@@ -366,10 +366,11 @@ public class VentanaMensajes extends JFrame {
                 splitPrincipal.repaint();
                 splitPrincipal.setRightComponent(panelCargandoMensajes);
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         CrearListaMensajes(usuario);
                     }
-                  });
+                });
             }
         });
 
