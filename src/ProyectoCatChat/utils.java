@@ -52,7 +52,6 @@ public class utils {
         Blob datosFoto = rs.getBlob(1);
 
         File temp = File.createTempFile("tempFotoCatChat", extImage);
-        System.out.println(temp.getAbsolutePath());
         InputStream is = datosFoto.getBinaryStream();
         FileOutputStream fos = new FileOutputStream(temp);
         int b = 0;
@@ -81,7 +80,7 @@ public class utils {
     }
 
     public static void Acomodar(JFrame ventana) {
-        ventana.setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "Saludo.png"));
+        ventana.setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "icono.png"));
         ventana.setTitle("CatChat");
         ventana.setBounds(100, 100, 1280, 720);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

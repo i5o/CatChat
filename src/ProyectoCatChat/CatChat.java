@@ -62,7 +62,9 @@ public class CatChat {
             public void actionPerformed(ActionEvent arg0) {
                 Usuario = ventanaLogin.nuevoUsuario.getText();
                 utils.Registro(ventanaLogin);
-                llamarVentanaDatos();
+                if (!(ventanaLogin.EmailEnUso.isVisible() || ventanaLogin.UsuarioEnUso.isVisible())) {
+                    llamarVentanaDatos();
+                }
             }
         });
 

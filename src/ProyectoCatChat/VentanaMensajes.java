@@ -31,6 +31,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
@@ -119,7 +120,8 @@ public class VentanaMensajes extends JFrame {
         fotodePerfilMarco.setBorder(new LineBorder(new Color(30, 144, 255), 1, true));
         fotodePerfilMarco.setBackground(new Color(30, 144, 255));
 
-        btnEditarDatos = CrearBotonAnimado("/editarPerfil.png", "/editarPerfil_.png");
+        btnEditarDatos = CrearBotonAnimado("editarPerfil.png", "editarPerfil_.png");
+        btnEditarDatos.setToolTipText("Haz click aquí para editar tu perfil.");
         btnEditarDatos.setBounds(240, 18, 20, 20);
         panelDatosUsuario.add(btnEditarDatos);
 
@@ -209,7 +211,7 @@ public class VentanaMensajes extends JFrame {
         t1.start();
 
         // Redibujar el fondo para evitar problemas...
-        Timer redibujarFondo = new Timer(200, new ActionListener() {
+        Timer redibujarFondo = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 lblFondo.repaint();
@@ -273,6 +275,7 @@ public class VentanaMensajes extends JFrame {
         catch (Exception e1) {
             e1.printStackTrace();
         }
+
         JLabel label = new JLabel(nombre);
         label.setForeground(Color.WHITE);
         label.setFont(new Font("Josefin Sans", Font.BOLD, 18));
@@ -280,6 +283,7 @@ public class VentanaMensajes extends JFrame {
         usuario.add(label);
 
         JButton btnChatear = CrearBotonChat(usuario_);
+        btnChatear.setToolTipText("Haz click aquí para chatear con ésta persona.");
         btnChatear.setBounds(230, 35, 35, 35);
         usuario.add(btnChatear);
 
@@ -334,10 +338,6 @@ public class VentanaMensajes extends JFrame {
             public void mouseExited(MouseEvent e) {
                 setCursor(utils.defaultCursor);
             }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
         });
         return botonAnimado;
     }
@@ -350,6 +350,7 @@ public class VentanaMensajes extends JFrame {
         botonSeleccion.setFocusable(false);
         botonSeleccion.setContentAreaFilled(false);
         botonSeleccion.setBorder(BorderFactory.createEmptyBorder());
+        botonSeleccion.setToolTipText("Haz click aquí para empezar a hablar con ésta persona.");
 
         botonSeleccion.addActionListener(new ActionListener() {
             @Override
@@ -360,7 +361,15 @@ public class VentanaMensajes extends JFrame {
                 botonSeleccion.setIcon(utils.CrearIcono(utils.posicion_archivos + "seleccion_.png", 35, 35, true));
                 seleccionado = usuario;
                 seleccionado_btn = botonSeleccion;
-                CrearListaMensajes(usuario);
+                splitPrincipal.setRightComponent(null);
+                splitPrincipal.revalidate();
+                splitPrincipal.repaint();
+                splitPrincipal.setRightComponent(panelCargandoMensajes);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        CrearListaMensajes(usuario);
+                    }
+                  });
             }
         });
 
@@ -572,7 +581,6 @@ public class VentanaMensajes extends JFrame {
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
-                splitPrincipal.setRightComponent(panelCargandoMensajes);
                 ObtenerMensajes(seleccionado, usuario);
                 splitPrincipal.setRightComponent(splitMensajes);
             }
@@ -609,10 +617,7 @@ public class VentanaMensajes extends JFrame {
 
     public void EnviarMensaje(String mensaje, String fecha) {
         chequearMensajes.stop();
-        String[] a = new String[3];
-        a[0] = usuario;
-        a[1] = mensaje;
-        a[2] = fecha;
+        String[] a = { usuario, mensaje, fecha };
         mensajes_json.put(a);
         mensajes_json = new JSONObject(mensajes.toString()).getJSONArray("Mensajes");
 

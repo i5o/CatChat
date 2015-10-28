@@ -273,7 +273,7 @@ public class VentanaLogin extends JFrame {
             }
         });
 
-        // Etiqueta correo electrÃ³nico
+        // Etiqueta correo electrónico
         nuevoEmail = new JTextField();
         nuevoEmail.setBounds(700, 410, 455, 30);
         nuevoEmail.setFont(fuente_entry);
