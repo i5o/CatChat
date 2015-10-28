@@ -355,7 +355,7 @@ public class utils {
 
     public static boolean DebeLlenarDatos(String Usuario) {
         boolean debe = false;
-        String sentencia = "select registroCompleto from usuario where usuario='" + Usuario + "';";
+        String sentencia = "select registroCompleto from perfil where usuario='" + Usuario + "';";
         try {
             Statement stmt_llenardatos = conexion.createStatement();
             ResultSet rs = stmt_llenardatos.executeQuery(sentencia);
