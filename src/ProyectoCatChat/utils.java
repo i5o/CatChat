@@ -64,14 +64,19 @@ public class utils {
      * Devuelve si el campo 'x' con el valor 'y', está siendo usado.
      */
     public static boolean CampoUsado(String campo, String valor) {
+        // sentencia sql
         String sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
-        Statement stmt_datosvacios;
+
         try {
-            stmt_datosvacios = conexion.createStatement();
+            // Crea el interprete
+            Statement stmt_datosvacios = conexion.createStatement();
+            // Ejecuta la consulta
             ResultSet rs = stmt_datosvacios.executeQuery(sentencia);
+            // Devuelve si x esta en y, a nivel de base de datos.
             return !(!rs.isBeforeFirst() && rs.getRow() == 0);
         }
         catch (SQLException e) {
+            // en caso de que falle, asumimos que está usado
             return true;
         }
     }
