@@ -47,7 +47,9 @@ public class utils {
         rs.next();
         String extImage = rs.getString(2);
 
-        if (extImage.equals("")) { return "?"; }
+        if (extImage.equals("")) {
+            return "?";
+        }
 
         Blob datosFoto = rs.getBlob(1);
 
@@ -139,7 +141,8 @@ public class utils {
     }
 
     public static String ObtenerMensajes(String user1, String user2) {
-        String sentencia_busqueda = "select texto from mensajes where '" + user1 + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
+        String sentencia_busqueda = "select texto from mensajes where '" + user1
+                + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
         String sentencia_agregado = "INSERT INTO `mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
 
         Statement stmt_;
@@ -277,7 +280,9 @@ public class utils {
             ventana.UsuarioEnUso.setVisible(true);
         }
 
-        if (algoUsado) { return; }
+        if (algoUsado) {
+            return;
+        }
 
         try {
             psmnt = conexion.prepareStatement(sentencia);

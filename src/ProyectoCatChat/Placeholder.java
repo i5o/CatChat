@@ -15,6 +15,11 @@ import javax.swing.text.JTextComponent;
 
 @SuppressWarnings("serial")
 public class Placeholder extends JLabel implements FocusListener, DocumentListener {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public enum Show {
         ALWAYS, FOCUS_GAINED, FOCUS_LOST;
     }

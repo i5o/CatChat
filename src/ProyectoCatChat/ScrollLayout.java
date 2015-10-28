@@ -83,7 +83,9 @@ public class ScrollLayout implements LayoutManager, java.io.Serializable {
     }
 
     private Dimension getActualSize(Component component) {
-        if (usePreferredSize) { return component.getPreferredSize(); }
+        if (usePreferredSize) {
+            return component.getPreferredSize();
+        }
 
         Dimension d = component.getSize();
 

@@ -135,8 +135,7 @@ public class VentanaMensajes extends JFrame {
         panelUsoChat = new JPanel();
         panelUsoChat.setBackground(new Color(0, 0, 0, 0));
         panelUsoChat.setLayout(null);
-        JLabel lblUsoChat =
-            new JLabel(
+        JLabel lblUsoChat = new JLabel(
                 "<html><center>Para comenzar a chatear, seleccione un usuario clickeando el icono (el icono es el que está actualmente en el fondo) que aparece al costado de su información.<br>\r\n</center>");
         lblUsoChat.setForeground(new Color(0, 0, 255));
         lblUsoChat.setFont(new Font("Raleway", Font.BOLD, 27));
@@ -389,7 +388,9 @@ public class VentanaMensajes extends JFrame {
     }
 
     public String ObtenerFoto(String user) {
-        if (fotosPath.containsKey(user)) { return fotosPath.get(user); }
+        if (fotosPath.containsKey(user)) {
+            return fotosPath.get(user);
+        }
 
         String path = "?";
         try {
@@ -402,7 +403,9 @@ public class VentanaMensajes extends JFrame {
     }
 
     public String ObtenerNombre(String user) {
-        if (nombreUsuarios.containsKey(user)) { return nombreUsuarios.get(user); }
+        if (nombreUsuarios.containsKey(user)) {
+            return nombreUsuarios.get(user);
+        }
 
         String nombre = utils.ObtenerNombre(user);
         nombreUsuarios.put(user, nombre);
