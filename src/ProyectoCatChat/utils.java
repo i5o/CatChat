@@ -174,16 +174,16 @@ public class utils {
         String sentencia = "UPDATE `perfil` SET `sexo`=?, `edad`=?, `nombre`=?, `apellido`=?, `ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
 
         // defino la extension, que por defecto es "" (vacia)
-        String extension = "";
+        String extensionImagen = "";
 
         // defino imagen, que utiliza el path de la foto seleccionada en la ventanaDatos
-        String imagen = ventana.pathFoto;
+        String pathImagen = ventana.pathFoto;
 
         // obtengo la extensión de la imagen
         // Se toman los últimos caracteres de el archivo (desde el último punto)
-        int i = imagen.lastIndexOf(".");
+        int i = pathImagen.lastIndexOf(".");
         if (i >= 0) {
-            extension = imagen.substring(i);
+            extensionImagen = pathImagen.substring(i);
         }
 
         try {
@@ -196,12 +196,12 @@ public class utils {
             psmnt.setString(3, ventana.CambioNombre.getText());
             psmnt.setString(4, ventana.CambioApellido.getText());
             psmnt.setString(5, ventana.CambioCiudad.getText());
-            psmnt.setString(7, extension);
+            psmnt.setString(7, extensionImagen);
             psmnt.setString(8, "1");
             psmnt.setString(9, ventana.usuario);
 
             // El tipo de dato blob necesita ser subido con este método
-            FileInputStream fin = new FileInputStream(imagen);
+            FileInputStream fin = new FileInputStream(pathImagen);
             psmnt.setBinaryStream(6, fin, fin.available());
 
             // Ejecuto la sentencia, (guardo datos)
