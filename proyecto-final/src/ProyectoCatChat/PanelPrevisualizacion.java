@@ -17,10 +17,6 @@ import javax.swing.JPanel;
 
 public class PanelPrevisualizacion extends JPanel
 implements PropertyChangeListener {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6974646137771314674L;
 	private int width, height;
 	private ImageIcon icon;

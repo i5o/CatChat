@@ -34,44 +34,31 @@ import javax.swing.text.BadLocationException;
 public class VentanaDatos extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static String usuario = null;
-	private static String pathFotoDefecto;
-	private static String pathFotoDefectoMujer;
-	private static String pathFotoDefectoHombre;
-	private static JButton fotoDefecto;
-	private static JButton CambiarFoto;
-	private static Timer ponerDefecto;
-	private static JLabel FotoDePerfil;
-	private static JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5;
-	private static boolean guardandoDatos;
-	private static boolean obteniendoFoto; 
-	private static boolean cargandoDatos;
-	private static boolean manejandoDatos;
+	private String pathFotoDefecto = utils.posicion_archivos + "fotoDefecto.png";
+	private String pathFotoDefectoMujer = utils.posicion_archivos + "fotoDefectoMujer.png";
+	private String pathFotoDefectoHombre = utils.posicion_archivos + "fotoDefectoHombre.png";
+	private JButton fotoDefecto;
+	private JButton CambiarFoto;
+	private Timer ponerDefecto;
+	private JLabel FotoDePerfil;
+	private JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5;
+	private boolean guardandoDatos;
+	private boolean obteniendoFoto; 
+	private boolean cargandoDatos;
+	private boolean manejandoDatos;
 
 	/* Estos datos/widgets son accesibles desde cualquier archivo. */
 	public JButton Siguiente;
-	public String pathFoto;
+	public String pathFoto = pathFotoDefecto;
 	public JTextField CambioNombre, CambioApellido, CambioCiudad, CambioEdad;
 	public JComboBox <String> Sexo;
+	public String usuario = null;
 
 	File chooserPath = new File(System.getProperty("user.home"));
 
 	public VentanaDatos(String usuario_) {
 		usuario = usuario_;
-		pathFotoDefecto = utils.posicion_archivos + "fotoDefecto.png";
-		pathFotoDefectoMujer = utils.posicion_archivos + "fotoDefectoMujer.png";
-		pathFotoDefectoHombre = utils.posicion_archivos + "fotoDefectoHombre.png";
-		pathFoto = pathFotoDefecto;
-		ponerDefecto = null;
-		FotoDePerfil = null;
-		guardandoDatos = false;
-		obteniendoFoto = false; 
-		cargandoDatos = false;
-		manejandoDatos = false;
-		initialize();
-	}
 
-	private void initialize() {
 		// Tipografías
 		Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 20);
 		Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);

@@ -54,51 +54,35 @@ import org.json.JSONObject;
 public class VentanaMensajes extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	private static int cantidadUsuarios;
-	private static int cantidadMensajes;
-	private static int y_mensajes;
-	private static String usuario;
-	private static String seleccionado;
-	private static String pathMiFoto;
-	private static Map <String, JLabel> fotos;
-	private static Map <String, String> fotosPath;
-	private static Map <String, String> nombreUsuarios;
-	private static Map <String, JButton> botonesChatUsuarios;
-	private static JSONObject mensajes;
-	private static JSONArray mensajes_json;
+	private int cantidadUsuarios = 0;
+	private int cantidadMensajes = 0;
+	private int y_mensajes = 0;
+	private String usuario = null;
+	private String seleccionado = null;
+	private String pathMiFoto = utils.posicion_archivos + "ajax-loader.gif";
+	private Map <String, JLabel> fotos = new HashMap <String, JLabel> ();
+	private Map <String, String> fotosPath = new HashMap <String, String> ();
+	private Map <String, String> nombreUsuarios = new HashMap <String, String> ();
+	private Map <String, JButton> botonesChatUsuarios = new HashMap <String, JButton> ();
+	private JSONObject mensajes = null;
+	private JSONArray mensajes_json = null;
 
-	private static JLabel fotodePerfil;
-	private static JButton seleccionado_btn;
-	private static JPanel panelUsuarios;
-	private static JPanel panelMensajes;
-	private static JSplitPane splitPrincipal;
-	private static JPanel panelCargandoMensajes;
-	private static JPanel panelUsoChat;
-	private static JLabel lblCargandoMensajes;
+	private JLabel fotodePerfil;
+	private JButton seleccionado_btn;
+	private JPanel panelUsuarios;
+	private JPanel panelMensajes;
+	private JSplitPane splitPrincipal;
+	private JPanel panelCargandoMensajes;
+	private JPanel panelUsoChat;
+	private JLabel lblCargandoMensajes;
 
-	private static JScrollPane scrollMensajes;
-	private static Timer chequearMensajes;
-	public static JButton btnEditarDatos;
+	private JScrollPane scrollMensajes;
+	private Timer chequearMensajes;
+
+	public JButton btnEditarDatos;
 	
 	public VentanaMensajes(String usuario_) {
-		// Le pongo los valores por defecto a las variables.
-		cantidadUsuarios = 0;
-		cantidadMensajes = 0;
-		y_mensajes = 0;
 		usuario = usuario_;
-		seleccionado = null;
-		pathMiFoto = utils.posicion_archivos + "ajax-loader.gif";
-		fotos = new HashMap <String, JLabel> ();
-		fotosPath = new HashMap <String, String> ();
-		nombreUsuarios = new HashMap <String, String> ();
-		botonesChatUsuarios = new HashMap <String, JButton> ();
-		mensajes = null;
-		mensajes_json = null;
-
-		initialize();
-	}
-
-	private void initialize() {
 
 		utils.Acomodar(this);
 
@@ -213,8 +197,7 @@ public class VentanaMensajes extends JFrame {
 					for (final String user_: fotos.keySet()) {
 						Thread cargarFoto = new Thread(new Runnable() {
 							public void run() {
-								String path;
-								path = ObtenerFoto(user_);
+								String path = ObtenerFoto(user_);
 								JLabel miLabelFoto = fotos.get(user_);
 								miLabelFoto.setIcon(utils.CrearIcono(path, 55, 55, true));
 								fotosPath.put(user_, path);

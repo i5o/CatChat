@@ -94,9 +94,6 @@ public class ScrollLayout implements LayoutManager, java.io.Serializable {
 			int x = parentInsets.left;
 			int y = parentInsets.top;
 
-			//  Get x/y location of any component outside the bounds of the panel.
-			//  All components will be adjust by the x/y values, if necessary.
-
 			for (Component component: parent.getComponents()) {
 				if (component.isVisible()) {
 					Point location = component.getLocation();
@@ -107,8 +104,6 @@ public class ScrollLayout implements LayoutManager, java.io.Serializable {
 
 			x = (x < parentInsets.left) ? parentInsets.left - x : 0;
 			y = (y < parentInsets.top) ? parentInsets.top - y : 0;
-
-			//  Set bounds of each component
 
 			for (Component component: parent.getComponents()) {
 				if (component.isVisible()) {

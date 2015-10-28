@@ -7,6 +7,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -235,5 +237,133 @@ public class utils {
 		}
 
 		return mensajes_json_nuevos;
+	}
+
+	public static boolean CampoVacio(String campo, String valor) {
+		String sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
+		Statement stmt_datosvacios;
+		try {
+			stmt_datosvacios = conexion.createStatement();
+			ResultSet rs = stmt_datosvacios.executeQuery(sentencia);
+			return consultaVacia(rs);
+		} catch (SQLException e) {
+			return true;
+		}
+	}
+
+	public static boolean consultaVacia(ResultSet rs) {
+		try {
+			return (!rs.isBeforeFirst() && rs.getRow() == 0);
+		} catch (SQLException e) {
+			return true;
+		}
+	}
+
+	public static void Registro(VentanaLogin ventana) {
+		String sentencia = "INSERT INTO `usuario` (`usuario`, `contraseña`, `email`) VALUES (?, ?, ?);";
+		PreparedStatement psmnt = null;
+		String nuevoEmail = ventana.nuevoEmail.getText();
+		String nuevoPassword = ventana.nuevoPassword.getText();
+		String nuevoUsuario = ventana.nuevoUsuario.getText();
+
+		boolean algoUsado = false;
+		if (!CampoVacio("email", nuevoEmail)) {
+			algoUsado = true;
+			ventana.EmailEnUso.setVisible(true);
+		}
+		if (!CampoVacio("usuario", nuevoUsuario)) {
+			algoUsado = true;
+			ventana.UsuarioEnUso.setVisible(true);
+		}
+
+		if (algoUsado) {
+			return;
+		}
+
+		try {
+			psmnt = conexion.prepareStatement(sentencia);
+			psmnt.setString(1, nuevoUsuario);
+			psmnt.setString(2, nuevoPassword);
+			psmnt.setString(3, nuevoEmail);
+
+			psmnt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static boolean Login(VentanaLogin ventana) {
+		String sentencia = "select usuario,contraseña from `usuario` where `usuario`=? and `contraseña`=?";
+		String user = ventana.EntrarUsuario.getText();
+		String password = ventana.EntrarPassword.getText();
+		PreparedStatement psmnt = null;
+
+		try {
+			psmnt = conexion.prepareStatement(sentencia);
+			psmnt.setString(1, user);
+			psmnt.setString(2, password);
+
+			ResultSet resultados = psmnt.executeQuery();
+
+			if (consultaVacia(resultados)) {
+				ventana.datosIncorrectos.setVisible(true);
+				return false;
+			}
+			resultados.next();
+			resultados.getString(1);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
+
+	}
+
+	public static void GuardarDatos(VentanaDatos ventana) {
+		String sentencia = "UPDATE `usuario` SET `sexo`=?, `edad`=?, `Nombre`=?, `Apellido`=?, `Ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
+		PreparedStatement psmnt = null;
+
+		String extension = "";
+		String imagen = ventana.pathFoto;
+		int i = imagen.lastIndexOf(".");
+		if (i >= 0) {
+			extension = imagen.substring(i);
+		}
+		try {
+			psmnt = conexion.prepareStatement(sentencia);
+			psmnt.setString(1, ventana.Sexo.getSelectedItem().toString());
+			psmnt.setInt(2, Integer.parseInt(ventana.CambioEdad.getText()));
+			psmnt.setString(3, ventana.CambioNombre.getText());
+			psmnt.setString(4, ventana.CambioApellido.getText());
+			psmnt.setString(5, ventana.CambioCiudad.getText());
+			psmnt.setString(7, extension);
+			psmnt.setString(8, "1");
+			psmnt.setString(9, ventana.usuario);
+
+			FileInputStream fin = new FileInputStream(imagen);
+			psmnt.setBinaryStream(6, fin, fin.available());
+
+			psmnt.executeUpdate();
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static boolean DebeLlenarDatos(String Usuario) {
+		boolean debe = false;
+		String sentencia = "select registroCompleto from usuario where usuario='" + Usuario + "';";
+		try {
+			Statement stmt_llenardatos = conexion.createStatement();
+			ResultSet rs = stmt_llenardatos.executeQuery(sentencia);
+			rs.next();
+			if (rs.getString(1).equals("1")) {
+				debe = false;
+			} else {
+				debe = true;
+			}
+		} catch (SQLException e) {
+			debe = true;
+		}
+		return debe;
 	}
 }

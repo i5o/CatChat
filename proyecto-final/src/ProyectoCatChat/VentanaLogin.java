@@ -38,7 +38,7 @@ public class VentanaLogin extends JFrame {
 	public JTextField EntrarUsuario, EntrarPassword, nuevoEmail, nuevoUsuario, nuevoPassword;
 
 	private JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5;
-	String iconoAlertaEntry_path;
+	public String iconoAlertaEntry_path;
 	ImageIcon iconoAlertaEntry;
 
 	DocumentListener chequearTexto;
@@ -46,12 +46,6 @@ public class VentanaLogin extends JFrame {
 	Color colorLabel = Color.decode("#EF6161");
 
 	public VentanaLogin() {
-		initialize();
-	}
-
-
-	private void initialize() {
-		// Tipografías
 		Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 25);
 		Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
 		Font fuente_titulo_30 = new Font("Raleway", Font.PLAIN, 30);
@@ -153,7 +147,6 @@ public class VentanaLogin extends JFrame {
 				}
 			}
 		};
-
 
 		//Etiqueta para nombre de usuarios
 		EntrarUsuario = new JTextField();
