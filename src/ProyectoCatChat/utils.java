@@ -75,12 +75,7 @@ public class utils {
         String ciudad = rs.getString(4);
         String sexo = rs.getString(5);
 
-        Object[] datos = new Object[5];
-        datos[0] = nombre;
-        datos[1] = apellido;
-        datos[2] = edad;
-        datos[3] = ciudad;
-        datos[4] = sexo;
+        Object[] datos = { nombre, apellido, edad, ciudad, sexo };
 
         return datos;
     }

@@ -192,12 +192,7 @@ public class VentanaDatos extends JFrame {
         AlertaEntry4 = utils.CrearAlertaEntry(25, 2);
         AlertaEntry5 = utils.CrearAlertaEntry(25, 2);
 
-        final JLabel[] alertas = new JLabel[5];
-        alertas[0] = AlertaEntry1;
-        alertas[1] = AlertaEntry2;
-        alertas[2] = AlertaEntry3;
-        alertas[3] = AlertaEntry4;
-        alertas[4] = AlertaEntry5;
+        final JLabel[] alertas = { AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5 };
 
         Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {
             @Override
@@ -235,11 +230,9 @@ public class VentanaDatos extends JFrame {
 
                 ImageIcon iconoAlertaEntry = utils.CrearIcono(iconoFinal, 20, 20, true);
                 if (manejandoDatos) { return; }
-                AlertaEntry1.setIcon(iconoAlertaEntry);
-                AlertaEntry2.setIcon(iconoAlertaEntry);
-                AlertaEntry3.setIcon(iconoAlertaEntry);
-                AlertaEntry4.setIcon(iconoAlertaEntry);
-                AlertaEntry5.setIcon(iconoAlertaEntry);
+                for (JLabel alerta : alertas) {
+                    alerta.setIcon(iconoAlertaEntry);
+                }
                 if (cargandoDatos || guardandoDatos) {
                     manejandoDatos = true;
                 }

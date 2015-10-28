@@ -80,6 +80,8 @@ public class VentanaLogin extends JFrame {
         AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una contraseña</font></p></html>");
         AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un correo electrónico</font></p></html>");
 
+        final JLabel[] alertas = { AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5 };
+
         Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -90,11 +92,9 @@ public class VentanaLogin extends JFrame {
                     iconoAlertaEntry_path = utils.posicion_archivos + "AlertaEntry.png";
                 }
                 iconoAlertaEntry = utils.CrearIcono(iconoAlertaEntry_path, 20, 20, true);
-                AlertaEntry1.setIcon(iconoAlertaEntry);
-                AlertaEntry2.setIcon(iconoAlertaEntry);
-                AlertaEntry3.setIcon(iconoAlertaEntry);
-                AlertaEntry4.setIcon(iconoAlertaEntry);
-                AlertaEntry5.setIcon(iconoAlertaEntry);
+                for (JLabel alerta : alertas) {
+                    alerta.setIcon(iconoAlertaEntry);
+                }
             }
         });
 
