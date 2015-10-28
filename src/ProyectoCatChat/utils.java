@@ -40,14 +40,14 @@ public class utils {
 
     @SuppressWarnings("resource")
     public static String ObtenerFoto(String usuario) throws SQLException, IOException, NullPointerException {
-        String sentencia = "select foto,extImagen from usuario where usuario='" + usuario + "';";
+        String sentencia = "select foto,extImagen from perfil where usuario='" + usuario + "';";
         Statement stmt_foto = conexion.createStatement();
         ResultSet rs = stmt_foto.executeQuery(sentencia);
 
         rs.next();
         String extImage = rs.getString(2);
 
-        if (extImage.equals("__base_defecto__")) { return "?"; }
+        if (extImage.equals("")) { return "?"; }
 
         Blob datosFoto = rs.getBlob(1);
 
@@ -63,7 +63,7 @@ public class utils {
     }
 
     public static Object[] ObtenerDatosEdicion(String usuario) throws SQLException {
-        String sentencia = "select Nombre,Apellido,Edad,Ciudad,Sexo from usuario where usuario='" + usuario + "';";
+        String sentencia = "select nombre,apellido,edad,ciudad,sexo from perfil where usuario='" + usuario + "';";
         Statement stmt_datos = conexion.createStatement();
         ResultSet rs = stmt_datos.executeQuery(sentencia);
         rs.next();
@@ -123,7 +123,7 @@ public class utils {
     }
 
     public static String ObtenerNombre(String user) {
-        String sentencia = "select nombre,apellido from usuario where usuario='" + user + "';";
+        String sentencia = "select nombre,apellido from perfil where usuario='" + user + "';";
         Statement stmt_;
         String nombre = "?";
         try {
@@ -139,8 +139,8 @@ public class utils {
     }
 
     public static String ObtenerMensajes(String user1, String user2) {
-        String sentencia_busqueda = "select texto from Mensajes where '" + user1 + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
-        String sentencia_agregado = "INSERT INTO `Mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
+        String sentencia_busqueda = "select texto from mensajes where '" + user1 + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
+        String sentencia_agregado = "INSERT INTO `mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
 
         Statement stmt_;
         String jsonmensajes = "{ 'Mensajes': [] }";
@@ -172,7 +172,7 @@ public class utils {
     }
 
     public static void GuardarMensajes(JSONObject mensajes, String user1, String user2) {
-        String sentencia_guardado = "UPDATE `Mensajes` SET `texto`=? where ? IN (participante1, participante2) and ? IN (participante1, participante2);";
+        String sentencia_guardado = "UPDATE `mensajes` SET `texto`=? where ? IN (participante1, participante2) and ? IN (participante1, participante2);";
         PreparedStatement psmnt = null;
         try {
             psmnt = conexion.prepareStatement(sentencia_guardado);
@@ -186,7 +186,7 @@ public class utils {
     }
 
     public static ArrayList<String> ObtenerUsuarios() {
-        String sentencia = "select usuario from usuario where registroCompleto=1;";
+        String sentencia = "select usuario from perfil where registroCompleto=1;";
         Statement stmt_addusers;
         ArrayList<String> usuarios = null;
         try {
@@ -239,7 +239,7 @@ public class utils {
     }
 
     public static boolean CampoVacio(String campo, String valor) {
-        String sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
+        String sentencia = "select " + campo + " from perfil where " + campo + "='" + valor + "';";
         Statement stmt_datosvacios;
         try {
             stmt_datosvacios = conexion.createStatement();
@@ -261,7 +261,7 @@ public class utils {
     }
 
     public static void Registro(VentanaLogin ventana) {
-        String sentencia = "INSERT INTO `usuario` (`usuario`, `contraseña`, `email`) VALUES (?, ?, ?);";
+        String sentencia = "INSERT INTO `usuario` (`usuario`, `contraseña`, `email`) VALUES (?, ?, ?)";
         PreparedStatement psmnt = null;
         String nuevoEmail = ventana.nuevoEmail.getText();
         String nuevoPassword = ventana.nuevoPassword.getText();
@@ -284,7 +284,9 @@ public class utils {
             psmnt.setString(1, nuevoUsuario);
             psmnt.setString(2, nuevoPassword);
             psmnt.setString(3, nuevoEmail);
+            psmnt.executeUpdate();
 
+            psmnt = conexion.prepareStatement("INSERT INTO `perfil` (`usuario`) VALUES ('" + nuevoUsuario + "');");
             psmnt.executeUpdate();
         }
         catch (SQLException e) {
@@ -321,7 +323,7 @@ public class utils {
     }
 
     public static void GuardarDatos(VentanaDatos ventana) {
-        String sentencia = "UPDATE `usuario` SET `sexo`=?, `edad`=?, `Nombre`=?, `Apellido`=?, `Ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
+        String sentencia = "UPDATE `perfil` SET `sexo`=?, `edad`=?, `nombre`=?, `apellido`=?, `ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
         PreparedStatement psmnt = null;
 
         String extension = "";

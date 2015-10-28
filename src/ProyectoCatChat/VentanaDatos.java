@@ -505,7 +505,7 @@ public class VentanaDatos extends JFrame {
         String ciudad = (String) datos[3];
         String sexo = (String) datos[4];
 
-        if (!nombre.equals("__base_defecto__")) {
+        if (!nombre.equals("")) {
             try {
                 CambioNombre.getDocument().insertString(0, nombre, null);
             }
@@ -513,11 +513,11 @@ public class VentanaDatos extends JFrame {
             }
         }
 
-        if (!apellido.equals("__base_defecto__")) {
+        if (!apellido.equals("")) {
             CambioApellido.setText(apellido);
         }
 
-        if (!ciudad.equals("__base_defecto__")) {
+        if (!ciudad.equals("")) {
             CambioCiudad.setText(ciudad);
         }
 
