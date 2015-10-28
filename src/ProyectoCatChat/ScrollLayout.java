@@ -111,8 +111,8 @@ public class ScrollLayout implements LayoutManager, java.io.Serializable {
                 }
             }
 
-            x = (x < parentInsets.left) ? parentInsets.left - x : 0;
-            y = (y < parentInsets.top) ? parentInsets.top - y : 0;
+            x = x < parentInsets.left ? parentInsets.left - x : 0;
+            y = y < parentInsets.top ? parentInsets.top - y : 0;
 
             for (Component component : parent.getComponents()) {
                 if (component.isVisible()) {

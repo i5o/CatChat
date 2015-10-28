@@ -291,7 +291,7 @@ public class VentanaDatos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String nuevoSexo = Sexo.getSelectedItem().toString();
-                boolean imagenCambiada = (pathFoto != pathFotoDefecto && pathFoto != pathFotoDefectoHombre && pathFoto != pathFotoDefectoMujer);
+                boolean imagenCambiada = pathFoto != pathFotoDefecto && pathFoto != pathFotoDefectoHombre && pathFoto != pathFotoDefectoMujer;
                 if (!imagenCambiada) {
                     if (nuevoSexo == "Femenino") {
                         pathFoto = pathFotoDefectoMujer;
@@ -429,7 +429,7 @@ public class VentanaDatos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean completo = false;
-                completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos));
+                completo = !AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos);
                 Siguiente.setEnabled(completo);
             }
         });

@@ -242,7 +242,7 @@ public class VentanaMensajes extends JFrame {
         usuario.setLayout(null);
         usuario.setPreferredSize(new Dimension(270, 70));
 
-        int y = (cantidadUsuarios * 70);
+        int y = cantidadUsuarios * 70;
         if (cantidadUsuarios > 0) {
             y += 6 * cantidadUsuarios;
         }

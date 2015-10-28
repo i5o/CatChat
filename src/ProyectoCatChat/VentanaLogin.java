@@ -356,7 +356,7 @@ public class VentanaLogin extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean completo = false;
-                completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible());
+                completo = !AlertaEntry1.isVisible() && !AlertaEntry2.isVisible();
                 Entrar.setEnabled(completo);
                 if (!completo) {
                     Entrar.setToolTipText("<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para iniciar sesión</center></html>");
@@ -371,7 +371,7 @@ public class VentanaLogin extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean completo = false;
-                completo = (!AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && !AlertaEntry5.isVisible());
+                completo = !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && !AlertaEntry5.isVisible();
                 Registrarse.setEnabled(completo);
                 if (!completo) {
                     Registrarse.setToolTipText("<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para registrarse</center></html>");

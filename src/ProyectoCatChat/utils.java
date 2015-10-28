@@ -259,7 +259,7 @@ public class utils {
 
     public static boolean consultaVacia(ResultSet rs) {
         try {
-            return (!rs.isBeforeFirst() && rs.getRow() == 0);
+            return !rs.isBeforeFirst() && rs.getRow() == 0;
         }
         catch (SQLException e) {
             return true;

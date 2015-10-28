@@ -59,7 +59,7 @@ public class PanelPrevisualizacion extends JPanel implements PropertyChangeListe
                 }
             }
 
-            if ((name != null) && esVisible) {
+            if (name != null && esVisible) {
                 ventana.setCursor(waitCursor);
                 icon = new ImageIcon(name);
                 image = icon.getImage();
