@@ -246,7 +246,7 @@ public class VentanaDatos extends JFrame {
         CambioNombre.setColumns(10);
         CambioNombre.setLayout(new BorderLayout());
         CambioNombre.add(AlertaEntry1, BorderLayout.EAST);
-        CambioNombre.setDocument(new LimiteTexto(30));
+        CambioNombre.setDocument(new LimiteTexto(15));
 
         CambioApellido = new JTextField();
         CambioApellido.setFont(fuente_entry);
@@ -256,7 +256,7 @@ public class VentanaDatos extends JFrame {
         CambioApellido.setLayout(new BorderLayout());
         CambioApellido.add(AlertaEntry2, BorderLayout.EAST);
 
-        CambioApellido.setDocument(new LimiteTexto(30));
+        CambioApellido.setDocument(new LimiteTexto(15));
 
         CambioCiudad = new JTextField();
         CambioCiudad.setFont(fuente_entry);
@@ -264,7 +264,7 @@ public class VentanaDatos extends JFrame {
         getContentPane().add(CambioCiudad);
         CambioCiudad.setLayout(new BorderLayout());
         CambioCiudad.add(AlertaEntry3, BorderLayout.EAST);
-        CambioCiudad.setDocument(new LimiteTexto(30));
+        CambioCiudad.setDocument(new LimiteTexto(20));
 
         JLabel lblSexo = new JLabel("Sexo");
         lblSexo.setForeground(Color.WHITE);

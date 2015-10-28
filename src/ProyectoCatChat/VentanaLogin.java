@@ -161,7 +161,7 @@ public class VentanaLogin extends JFrame {
         EntrarUsuario.setFont(fuente_entry);
         getContentPane().add(EntrarUsuario);
 
-        EntrarUsuario.setDocument(new LimiteTexto(30));
+        EntrarUsuario.setDocument(new LimiteTexto(15));
         EntrarUsuario.getDocument().addDocumentListener(chequearTexto);
         EntrarUsuario.getDocument().putProperty("alerta", AlertaEntry1);
         EntrarUsuario.getDocument().putProperty("padre", EntrarUsuario);
@@ -182,7 +182,7 @@ public class VentanaLogin extends JFrame {
         EntrarPassword.setHorizontalAlignment(SwingConstants.CENTER);
         EntrarPassword.setFont(fuente_entry);
         getContentPane().add(EntrarPassword);
-        EntrarPassword.setDocument(new LimiteTexto(45));
+        EntrarPassword.setDocument(new LimiteTexto(30));
         EntrarPassword.getDocument().addDocumentListener(chequearTexto);
         EntrarPassword.getDocument().putProperty("alerta", AlertaEntry2);
         EntrarPassword.getDocument().putProperty("padre", EntrarPassword);
@@ -235,9 +235,7 @@ public class VentanaLogin extends JFrame {
         nuevoUsuario.setBounds(700, 345, 200, 30);
         nuevoUsuario.setFont(fuente_entry);
         getContentPane().add(nuevoUsuario);
-        nuevoUsuario.setColumns(10);
-
-        nuevoUsuario.setDocument(new LimiteTexto(30));
+        nuevoUsuario.setDocument(new LimiteTexto(15));
         nuevoUsuario.getDocument().addDocumentListener(chequearTexto);
         nuevoUsuario.getDocument().putProperty("alerta", AlertaEntry3);
         nuevoUsuario.getDocument().putProperty("padre", nuevoUsuario);
@@ -257,8 +255,7 @@ public class VentanaLogin extends JFrame {
         nuevoPassword.setBounds(955, 345, 200, 30);
         nuevoPassword.setFont(fuente_entry);
         getContentPane().add(nuevoPassword);
-
-        nuevoPassword.setDocument(new LimiteTexto(45));
+        nuevoPassword.setDocument(new LimiteTexto(30));
         nuevoPassword.getDocument().addDocumentListener(chequearTexto);
         nuevoPassword.getDocument().putProperty("alerta", AlertaEntry4);
         nuevoPassword.getDocument().putProperty("padre", nuevoPassword);
@@ -278,9 +275,7 @@ public class VentanaLogin extends JFrame {
         nuevoEmail.setBounds(700, 410, 455, 30);
         nuevoEmail.setFont(fuente_entry);
         getContentPane().add(nuevoEmail);
-        nuevoEmail.setColumns(10);
-
-        nuevoEmail.setDocument(new LimiteTexto(200));
+        nuevoEmail.setDocument(new LimiteTexto(100));
         nuevoEmail.getDocument().addDocumentListener(chequearTexto);
         nuevoEmail.getDocument().putProperty("alerta", AlertaEntry5);
         nuevoEmail.getDocument().putProperty("padre", nuevoEmail);
