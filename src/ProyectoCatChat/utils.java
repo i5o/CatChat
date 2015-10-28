@@ -28,82 +28,21 @@ import org.json.JSONObject;
 
 public class utils {
     static Connection conexion = null;
-    static String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
-    static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
     static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
     static Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
+
+    static String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
     static String iconoAlertaEntry_path = posicion_archivos + "AlertaEntry.png";
+    static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
 
+    /*
+     * funcion principal, al crear utils.
+     * utils(conexion);
+     * Toma como parametro la conexion sql.
+     */
     public static void main(Connection conexion_) {
+        // seteo el valor de dicha conexion
         conexion = conexion_;
-    }
-
-    /*
-     * Función que devuelve el path de la foto
-     * Dicha foto se encuentra en la base de dato.
-     * Toma como parámetro el usuario
-     */
-    public static String ObtenerFoto(String usuario) throws SQLException, IOException, NullPointerException {
-        // sentencia sql que selecciona la foto y su extensión.
-        String sentencia = "select foto,extImagen from perfil where usuario='" + usuario + "';";
-        // Se crea el intérprete
-        Statement stmt_foto = conexion.createStatement();
-        // Se ejecuta la consulta.
-        ResultSet rs = stmt_foto.executeQuery(sentencia);
-
-        // utilizo next(), para chequear de que hay un dato, de lo contrario se
-        // lanza un error.
-        rs.next();
-
-        // obtengo la extensión de la imagen
-        String extImage = rs.getString(2);
-
-        // Si la extensión de la imagen es nula, la foto aún no fue puesta
-        if (extImage.equals("")) {
-            // por lo que se devuelve un path no existente
-            return "?";
-        }
-
-        // obtenemos los datos Blob (tipo de dato para guardar fotos)
-        Blob datosFoto = rs.getBlob(1);
-
-        // Creo un archivo temporal
-        File temp = File.createTempFile("tempFotoCatChat", extImage);
-        // y obtengo los datos de la foto (desde la base de datos)
-        InputStream is = datosFoto.getBinaryStream();
-        // Lo usamos para escribir datos
-        FileOutputStream fos = new FileOutputStream(temp);
-
-        // Escribo los datos al archivo
-        int b = 0;
-        while ((b = is.read()) != -1) {
-            fos.write(b);
-        }
-
-        // Devuelvo el path de la foto
-        return temp.getAbsolutePath();
-    }
-
-    /*
-     * Función que devuelve una matriz con los datos del usuario
-     * para la ventana de edición de datos.
-     * Toma como parámetro el usuario
-     */
-    public static Object[] ObtenerDatosEdicion(String usuario) throws SQLException {
-        String sentencia = "select nombre,apellido,edad,ciudad,sexo from perfil where usuario='" + usuario + "';";
-        Statement stmt_datos = conexion.createStatement();
-        ResultSet rs = stmt_datos.executeQuery(sentencia);
-        rs.next();
-
-        String nombre = rs.getString(1);
-        String apellido = rs.getString(2);
-        int edad = rs.getInt(3);
-        String ciudad = rs.getString(4);
-        String sexo = rs.getString(5);
-
-        Object[] datos = { nombre, apellido, edad, ciudad, sexo };
-
-        return datos;
     }
 
     /*
@@ -119,6 +58,43 @@ public class utils {
         ventana.getContentPane().setLayout(null);
         ventana.setResizable(false);
         ventana.setLocationRelativeTo(null);
+    }
+
+    /*
+     * Devuelve si el campo 'x' con el valor 'y', está siendo usado.
+     */
+    public static boolean CampoUsado(String campo, String valor) {
+        String sentencia = "select " + campo + " from usuario where " + campo + "='" + valor + "';";
+        Statement stmt_datosvacios;
+        try {
+            stmt_datosvacios = conexion.createStatement();
+            ResultSet rs = stmt_datosvacios.executeQuery(sentencia);
+            return !(!rs.isBeforeFirst() && rs.getRow() == 0);
+        }
+        catch (SQLException e) {
+            return true;
+        }
+    }
+
+    /*
+     * Crea y devuelve un JLabel que hace de "alerta"
+     * Toma como parámetros:
+     * - xTooltip, la distancia desde el mouse en el eje X (para el tooltip)
+     * - yTooltip, la distancia desde el mouse en el eje Y (para el tooltip)
+     */
+    public static JLabel CrearAlertaEntry(final int xTooltip, final int yTooltip) {
+        ImageIcon iconoAlertaEntry = CrearIcono(iconoAlertaEntry_path, 20, 20, true);
+
+        JLabel Alerta = new JLabel(iconoAlertaEntry) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(xTooltip, yTooltip);
+            }
+        };
+
+        return Alerta;
     }
 
     /*
@@ -149,95 +125,86 @@ public class utils {
     }
 
     /*
-     * Crea y devuelve un JLabel que hace de "alerta"
-     * Toma como parámetros:
-     * - xTooltip, la distancia desde el mouse en el eje X (para el tooltip)
-     * - yTooltip, la distancia desde el mouse en el eje Y (para el tooltip)
+     * Compruebo que el usuario haya llenado todos sus datos.
+     * Utilizado por la ventanaLogin al momento de logueo.
+     * Toma como parámetro el usuario a comprobar
      */
-    public static JLabel CrearAlertaEntry(final int xTooltip, final int yTooltip) {
-        ImageIcon iconoAlertaEntry = CrearIcono(iconoAlertaEntry_path, 20, 20, true);
+    public static boolean DebeLlenarDatos(String Usuario) {
+        // por defecto se asume que no debe llenar los datos.
+        boolean debe = false;
 
-        JLabel Alerta = new JLabel(iconoAlertaEntry) {
-            private static final long serialVersionUID = 1L;
+        // sentencia que obtiene el valor de registroCompleto,
+        // donde el usuario es igual al consultado
+        String sentencia = "select registroCompleto from perfil where usuario='" + Usuario + "';";
 
-            @Override
-            public Point getToolTipLocation(MouseEvent e) {
-                return new Point(xTooltip, yTooltip);
+        try {
+            // intérprete
+            Statement stmt_llenardatos = conexion.createStatement();
+            // se ejecuta la sentencia
+            ResultSet rs = stmt_llenardatos.executeQuery(sentencia);
+            rs.next();
+            // Si el resultado es igual a 1:
+            if (rs.getString(1).equals("1")) {
+                // no debe llenar datos
+                debe = false;
             }
-        };
-
-        return Alerta;
+            else {
+                // de lo contrario, debe de
+                debe = true;
+            }
+        }
+        catch (SQLException e) {
+            // en caso de que falle, asumimos que debe llenar datos
+            debe = true;
+        }
+        return debe;
     }
 
     /*
-     * Devuelve el nombre y el apellido (separados por un espacio)
-     * de x usuario desde la base de datos.
-     * Toma como parámetros el usuario.
+     * Guarda los datos de la ventana de edición de datos.
+     * Toma como parámetro la ventanaDatos
      */
-    public static String ObtenerNombre(String user) {
-        // sentencia sql que selecciona el nombre y el apellido
-        String sentencia = "select nombre,apellido from perfil where usuario='" + user + "';";
+    public static void GuardarDatos(VentanaDatos ventana) {
+        // sentencia para actualizar los datos.
+        String sentencia = "UPDATE `perfil` SET `sexo`=?, `edad`=?, `nombre`=?, `apellido`=?, `ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
 
-        // El nombre por defecto es "?", significando que no se pudo cargar el nombre.
-        String nombre = "?";
-        try {
-            // Creo intérprete y ejecuto la consulta.
-            Statement stmt_ = conexion.createStatement();
-            ResultSet rs = stmt_.executeQuery(sentencia);
-            rs.next();
-            // Obtengo el nombre.
-            nombre = rs.getString(1) + " " + rs.getString(2);
+        // defino la extension, que por defecto es "" (vacia)
+        String extension = "";
+
+        // defino imagen, que utiliza el path de la foto seleccionada en la ventanaDatos
+        String imagen = ventana.pathFoto;
+
+        // obtengo la extensión de la imagen
+        // Se toman los últimos caracteres de el archivo (desde el último punto)
+        int i = imagen.lastIndexOf(".");
+        if (i >= 0) {
+            extension = imagen.substring(i);
         }
-        catch (SQLException e) {
-        }
-
-        return nombre;
-    }
-
-    /*
-     * Devuelve el JSON con los mensajes obtenido desde la base de datos
-     * Toma como parámetros el participante1, y el participante2.
-     */
-    public static String ObtenerMensajes(String user1, String user2) {
-        // Sentencias que permiten buscar y agregar código JSON
-        String sentencia_busqueda = "select texto from mensajes where '" + user1
-                + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
-        String sentencia_agregado = "INSERT INTO `mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
-
-        // El String json por defecto ( en caso de que falle. )
-        String jsonmensajes = "{ 'Mensajes': [] }";
 
         try {
-            // Intérprete & ejecutar consulta
-            Statement stmt_ = conexion.createStatement();
-            ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
-            rs.next();
-            // INTENTO obtener los mensajes.
-            jsonmensajes = rs.getString(1);
-        }
-        catch (SQLException e) {
-            // Falló obteniendo mensajes, quiere decir que aún no han chateado.
-            String error = e.toString();
-            // Se crea un registro nuevo en la base de datos.
-            if (error.contains("Illegal operation on empty result set.")) {
-                PreparedStatement psmnt;
-                try {
-                    // Se crea una consulta, y se le agregan los valores.
-                    psmnt = conexion.prepareStatement(sentencia_agregado);
-                    psmnt.setString(1, user1);
-                    psmnt.setString(2, user2);
-                    psmnt.setString(3, jsonmensajes);
-                    psmnt.setString(4, user1 + "-" + user2);
-                    // Se ejecuta dicha consulta.
-                    psmnt.executeUpdate();
-                }
-                catch (SQLException e1) {
-                }
-            }
-        }
+            // interprete con dicha sentencia
+            PreparedStatement psmnt = conexion.prepareStatement(sentencia);
 
-        // Se devuelve el json
-        return jsonmensajes;
+            // seteo los datos
+            psmnt.setString(1, ventana.Sexo.getSelectedItem().toString());
+            psmnt.setInt(2, Integer.parseInt(ventana.CambioEdad.getText()));
+            psmnt.setString(3, ventana.CambioNombre.getText());
+            psmnt.setString(4, ventana.CambioApellido.getText());
+            psmnt.setString(5, ventana.CambioCiudad.getText());
+            psmnt.setString(7, extension);
+            psmnt.setString(8, "1");
+            psmnt.setString(9, ventana.usuario);
+
+            // El tipo de dato blob necesita ser subido con este método
+            FileInputStream fin = new FileInputStream(imagen);
+            psmnt.setBinaryStream(6, fin, fin.available());
+
+            // Ejecuto la sentencia, (guardo datos)
+            psmnt.executeUpdate();
+        }
+        catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -266,37 +233,48 @@ public class utils {
     }
 
     /*
-     * Obtengo los usuarios que han completado su registro
-     * No toma parámetros.
-     * Devuelve un ArrayList con los nombres de los usuarios.
+     * Chequea los datos del usuario y devuelve
+     * verdadero si los datos son correctos.
+     * Toma como parámetro la ventanaLogin.
      */
-    public static ArrayList<String> ObtenerUsuarios() {
-        // sentencia sql que me permite conocer los usuarios que han completado el registro
-        String sentencia = "select usuario from perfil where registroCompleto=1;";
+    public static boolean Login(VentanaLogin ventana) {
+        // sentencia sql que se encarga de comprobar que los datos sean correctos
+        String sentencia = "select usuario,contraseña from `usuario` where `usuario`=? and `contraseña`=?";
 
-        ArrayList<String> usuarios = null;
+        // usuario y contraseña obtenido desde la ventana de datos.
+        String user = ventana.EntrarUsuario.getText();
+        String password = ventana.EntrarPassword.getText();
 
         try {
-            // Creo la consulta
-            Statement stmt_addusers = conexion.createStatement();
-            // Ejecuto la consulta
-            ResultSet rs = stmt_addusers.executeQuery(sentencia);
-            // redefino el arraylist.
-            usuarios = new ArrayList<String>();
+            // intérprete con dicha sentencia
+            PreparedStatement psmnt = conexion.prepareStatement(sentencia);
 
-            while (rs.next()) { // mientras que haya un usuario siguiente
-                // Obtengo el nombre
-                String nombreUsuario = rs.getString(1);
-                // y lo guardo
-                usuarios.add(nombreUsuario);
+            // seteo los datos
+            psmnt.setString(1, user);
+            psmnt.setString(2, password);
+
+            ResultSet resultados = psmnt.executeQuery();
+
+            // Comprobamos que el resultado de la consulta no este vacía
+            if (!resultados.isBeforeFirst() && resultados.getRow() == 0) {
+                // se muestra la alerta que notifica al usuario que los datos son incorrectos
+                // y se devuelve falso.
+                ventana.datosIncorrectos.setVisible(true);
+                return false;
             }
 
+            // Si los datos son correctos, deberíamos poder acceder a la primer fila
+            resultados.next();
+            resultados.getString(1);
+
+            // los datos son correctos
+            return true;
         }
         catch (SQLException e) {
+            // error, asumimos que es falso
+            return false;
         }
 
-        // devuelvo el ArrayList con los datos
-        return usuarios;
     }
 
     /*
@@ -349,58 +327,226 @@ public class utils {
     }
 
     /*
-     * Devuelve si el campo 'x' con el valor 'y', está siendo usado.
+     * Función que devuelve una matriz con los datos del usuario
+     * para la ventana de edición de datos.
+     * Toma como parámetro el usuario
      */
-    public static boolean CampoUsado(String campo, String valor) {
-        String sentencia = "select " + campo + " from perfil where " + campo + "='" + valor + "';";
-        Statement stmt_datosvacios;
-        try {
-            stmt_datosvacios = conexion.createStatement();
-            ResultSet rs = stmt_datosvacios.executeQuery(sentencia);
-            return consultaVacia(rs);
-        }
-        catch (SQLException e) {
-            return true;
-        }
+    public static Object[] ObtenerDatosEdicion(String usuario) throws SQLException {
+        String sentencia = "select nombre,apellido,edad,ciudad,sexo from perfil where usuario='" + usuario + "';";
+        Statement stmt_datos = conexion.createStatement();
+        ResultSet rs = stmt_datos.executeQuery(sentencia);
+        rs.next();
+
+        String nombre = rs.getString(1);
+        String apellido = rs.getString(2);
+        int edad = rs.getInt(3);
+        String ciudad = rs.getString(4);
+        String sexo = rs.getString(5);
+
+        Object[] datos = { nombre, apellido, edad, ciudad, sexo };
+
+        return datos;
     }
 
-    public static boolean consultaVacia(ResultSet rs) {
-        try {
-            return !rs.isBeforeFirst() && rs.getRow() == 0;
+    /*
+     * Función que devuelve el path de la foto
+     * Dicha foto se encuentra en la base de dato.
+     * Toma como parámetro el usuario
+     */
+    public static String ObtenerFoto(String usuario) throws SQLException, IOException, NullPointerException {
+        // sentencia sql que selecciona la foto y su extensión.
+        String sentencia = "select foto,extImagen from perfil where usuario='" + usuario + "';";
+        // Se crea el intérprete
+        Statement stmt_foto = conexion.createStatement();
+        // Se ejecuta la consulta.
+        ResultSet rs = stmt_foto.executeQuery(sentencia);
+
+        // utilizo next(), para chequear de que hay un dato, de lo contrario se
+        // lanza un error.
+        rs.next();
+
+        // obtengo la extensión de la imagen
+        String extImage = rs.getString(2);
+
+        // Si la extensión de la imagen es nula, la foto aún no fue puesta
+        if (extImage.equals("")) {
+            // por lo que se devuelve un path no existente
+            return "?";
         }
-        catch (SQLException e) {
-            return true;
+
+        // obtenemos los datos Blob (tipo de dato para guardar fotos)
+        Blob datosFoto = rs.getBlob(1);
+
+        // Creo un archivo temporal
+        File temp = File.createTempFile("tempFotoCatChat", extImage);
+        // y obtengo los datos de la foto (desde la base de datos)
+        InputStream is = datosFoto.getBinaryStream();
+        // Lo usamos para escribir datos
+        FileOutputStream fos = new FileOutputStream(temp);
+
+        // Escribo los datos al archivo
+        int b = 0;
+        while ((b = is.read()) != -1) {
+            fos.write(b);
         }
+
+        // Devuelvo el path de la foto
+        return temp.getAbsolutePath();
     }
 
+    /*
+     * Devuelve el JSON con los mensajes obtenido desde la base de datos
+     * Toma como parámetros el participante1, y el participante2.
+     */
+    public static String ObtenerMensajes(String user1, String user2) {
+        // Sentencias que permiten buscar y agregar código JSON
+        String sentencia_busqueda = "select texto from mensajes where '" + user1
+                + "' IN (participante1, participante2) and '" + user2 + "' IN (participante1, participante2);";
+        String sentencia_agregado = "INSERT INTO `mensajes` (`participante1`, `participante2`, `texto`, `id`) VALUES (?, ?, ?, ?);";
+
+        // El String json por defecto ( en caso de que falle. )
+        String jsonmensajes = "{ 'Mensajes': [] }";
+
+        try {
+            // Intérprete & ejecutar consulta
+            Statement stmt_ = conexion.createStatement();
+            ResultSet rs = stmt_.executeQuery(sentencia_busqueda);
+            rs.next();
+            // INTENTO obtener los mensajes.
+            jsonmensajes = rs.getString(1);
+        }
+        catch (SQLException e) {
+            // Falló obteniendo mensajes, quiere decir que aún no han chateado.
+            String error = e.toString();
+            // Se crea un registro nuevo en la base de datos.
+            if (error.contains("Illegal operation on empty result set.")) {
+                PreparedStatement psmnt;
+                try {
+                    // Se crea una consulta, y se le agregan los valores.
+                    psmnt = conexion.prepareStatement(sentencia_agregado);
+                    psmnt.setString(1, user1);
+                    psmnt.setString(2, user2);
+                    psmnt.setString(3, jsonmensajes);
+                    psmnt.setString(4, user1 + "-" + user2);
+                    // Se ejecuta dicha consulta.
+                    psmnt.executeUpdate();
+                }
+                catch (SQLException e1) {
+                }
+            }
+        }
+
+        // Se devuelve el json
+        return jsonmensajes;
+    }
+
+    /*
+     * Devuelve el nombre y el apellido (separados por un espacio)
+     * de x usuario desde la base de datos.
+     * Toma como parámetros el usuario.
+     */
+    public static String ObtenerNombre(String user) {
+        // sentencia sql que selecciona el nombre y el apellido
+        String sentencia = "select nombre,apellido from perfil where usuario='" + user + "';";
+
+        // El nombre por defecto es "?", significando que no se pudo cargar el nombre.
+        String nombre = "?";
+        try {
+            // Creo intérprete y ejecuto la consulta.
+            Statement stmt_ = conexion.createStatement();
+            ResultSet rs = stmt_.executeQuery(sentencia);
+            rs.next();
+            // Obtengo el nombre.
+            nombre = rs.getString(1) + " " + rs.getString(2);
+        }
+        catch (SQLException e) {
+        }
+
+        return nombre;
+    }
+
+    /*
+     * Obtengo los usuarios que han completado su registro
+     * No toma parámetros.
+     * Devuelve un ArrayList con los nombres de los usuarios.
+     */
+    public static ArrayList<String> ObtenerUsuarios() {
+        // sentencia sql que me permite conocer los usuarios que han completado el registro
+        String sentencia = "select usuario from perfil where registroCompleto=1;";
+
+        ArrayList<String> usuarios = null;
+
+        try {
+            // Creo la consulta
+            Statement stmt_addusers = conexion.createStatement();
+            // Ejecuto la consulta
+            ResultSet rs = stmt_addusers.executeQuery(sentencia);
+            // redefino el arraylist.
+            usuarios = new ArrayList<String>();
+
+            while (rs.next()) { // mientras que haya un usuario siguiente
+                // Obtengo el nombre
+                String nombreUsuario = rs.getString(1);
+                // y lo guardo
+                usuarios.add(nombreUsuario);
+            }
+
+        }
+        catch (SQLException e) {
+        }
+
+        // devuelvo el ArrayList con los datos
+        return usuarios;
+    }
+
+    /*
+     * Registra al usuario en la base de datos
+     * Toma como parámetro la ventanaLogin.
+     */
     public static void Registro(VentanaLogin ventana) {
+        // Sentencia para registrar al usuario
         String sentencia = "INSERT INTO `usuario` (`usuario`, `contraseña`, `email`) VALUES (?, ?, ?)";
-        PreparedStatement psmnt = null;
+
+        // datos del usuario para registrarse
         String nuevoEmail = ventana.nuevoEmail.getText();
         String nuevoPassword = ventana.nuevoPassword.getText();
         String nuevoUsuario = ventana.nuevoUsuario.getText();
 
+        // booleano algoUsado, se vuelve verdadero en caso de que
+        // los datos: usuario y/o email estén registrados en el sistema
+        // ya que, usuario es llave primaria, y email es unica
         boolean algoUsado = false;
+
         if (CampoUsado("email", nuevoEmail)) {
             algoUsado = true;
+            // se muestra la alerta EmailEnUso en la ventana de login.
             ventana.EmailEnUso.setVisible(true);
         }
+
         if (CampoUsado("usuario", nuevoUsuario)) {
             algoUsado = true;
+
+            // se muestra la alerta usuarioEnUso en la ventana de login.
             ventana.UsuarioEnUso.setVisible(true);
         }
 
+        // Si algo está usado no se puede continuar.
         if (algoUsado) {
             return;
         }
 
         try {
-            psmnt = conexion.prepareStatement(sentencia);
+            // Se crea el intérprete
+            PreparedStatement psmnt = conexion.prepareStatement(sentencia);
+
+            // se setean los datos.
             psmnt.setString(1, nuevoUsuario);
             psmnt.setString(2, nuevoPassword);
             psmnt.setString(3, nuevoEmail);
             psmnt.executeUpdate();
 
+            // Y se crea otro intérprete con una sentencia que deja un valor por defecto
+            // en la tabla perfil. Dicho valor es el usuario.
             psmnt = conexion.prepareStatement("INSERT INTO `perfil` (`usuario`) VALUES ('" + nuevoUsuario + "');");
             psmnt.executeUpdate();
         }
@@ -408,83 +554,5 @@ public class utils {
             e.printStackTrace();
         }
 
-    }
-
-    public static boolean Login(VentanaLogin ventana) {
-        String sentencia = "select usuario,contraseña from `usuario` where `usuario`=? and `contraseña`=?";
-        String user = ventana.EntrarUsuario.getText();
-        String password = ventana.EntrarPassword.getText();
-        PreparedStatement psmnt = null;
-
-        try {
-            psmnt = conexion.prepareStatement(sentencia);
-            psmnt.setString(1, user);
-            psmnt.setString(2, password);
-
-            ResultSet resultados = psmnt.executeQuery();
-
-            if (consultaVacia(resultados)) {
-                ventana.datosIncorrectos.setVisible(true);
-                return false;
-            }
-            resultados.next();
-            resultados.getString(1);
-            return true;
-        }
-        catch (SQLException e) {
-            return false;
-        }
-
-    }
-
-    public static void GuardarDatos(VentanaDatos ventana) {
-        String sentencia = "UPDATE `perfil` SET `sexo`=?, `edad`=?, `nombre`=?, `apellido`=?, `ciudad`=?, `foto`=?, `extImagen`=?, `registroCompleto`=? WHERE `usuario`=?";
-        PreparedStatement psmnt = null;
-
-        String extension = "";
-        String imagen = ventana.pathFoto;
-        int i = imagen.lastIndexOf(".");
-        if (i >= 0) {
-            extension = imagen.substring(i);
-        }
-        try {
-            psmnt = conexion.prepareStatement(sentencia);
-            psmnt.setString(1, ventana.Sexo.getSelectedItem().toString());
-            psmnt.setInt(2, Integer.parseInt(ventana.CambioEdad.getText()));
-            psmnt.setString(3, ventana.CambioNombre.getText());
-            psmnt.setString(4, ventana.CambioApellido.getText());
-            psmnt.setString(5, ventana.CambioCiudad.getText());
-            psmnt.setString(7, extension);
-            psmnt.setString(8, "1");
-            psmnt.setString(9, ventana.usuario);
-
-            FileInputStream fin = new FileInputStream(imagen);
-            psmnt.setBinaryStream(6, fin, fin.available());
-
-            psmnt.executeUpdate();
-        }
-        catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static boolean DebeLlenarDatos(String Usuario) {
-        boolean debe = false;
-        String sentencia = "select registroCompleto from perfil where usuario='" + Usuario + "';";
-        try {
-            Statement stmt_llenardatos = conexion.createStatement();
-            ResultSet rs = stmt_llenardatos.executeQuery(sentencia);
-            rs.next();
-            if (rs.getString(1).equals("1")) {
-                debe = false;
-            }
-            else {
-                debe = true;
-            }
-        }
-        catch (SQLException e) {
-            debe = true;
-        }
-        return debe;
     }
 }
