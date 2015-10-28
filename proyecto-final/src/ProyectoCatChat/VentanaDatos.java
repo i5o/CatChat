@@ -2,31 +2,17 @@ package ProyectoCatChat;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -48,127 +34,70 @@ import javax.swing.text.BadLocationException;
 public class VentanaDatos extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-
-	private JLabel labelGatito,
-	lblNombre,
-	lblCiudad,
-	lblNewLabel_3,
-	lblEdad;
-
+	private static String usuario = null;
+	private static String pathFotoDefecto;
+	private static String pathFotoDefectoMujer;
+	private static String pathFotoDefectoHombre;
+	private static JButton fotoDefecto;
+	private static JButton CambiarFoto;
+	private static Timer ponerDefecto;
 	private static JLabel FotoDePerfil;
+	private static JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5;
+	private static boolean guardandoDatos;
+	private static boolean obteniendoFoto; 
+	private static boolean cargandoDatos;
+	private static boolean manejandoDatos;
 
-	private JLabel labelGatito1;
-
-	private JLabel lblFondo;
-
-	private JLabel Foto;
-
-	private JLabel lblNewLabel_1;
-
-	private JLabel lblCompleteEstosDatos;
-
-	private JLabel lblSexo;
-
-	public JTextField CambioNombre,
-	CambioApellido,
-	CambioCiudad,
-	CambioEdad;
-
-	public JButton Continuar,
-	CambiarFoto;
-
-	public static JButton Siguiente;
-
-	public JButton fotoDefecto;
-
-	public JComboBox < String > Sexo;
-
-	private String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
-
-
-	static String idUsuario = null;
-
-	public String pathFotoDefecto = posicion_archivos + "/fotoDefecto.png";
-	public String pathFoto = pathFotoDefecto;
-	public String pathFotoDefectoHombre = posicion_archivos + "/Hombre.png";
-	public String pathFotoDefectoMujer = posicion_archivos + "/Mujer.png";
-	static Connection conexion = null;
-
-	public Timer ponerDefecto, todoLleno;
-
-
-	private static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
-	private static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-
-	private static FileOutputStream fos;
-	private JLabel AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5;
-	private static ImageIcon iconoAlertaEntry;
-	String iconoAlertaEntry_path;
-	private boolean obteniendoFoto = false;
-	private boolean cargandoDatos = false;
-	private boolean ManejandoDatos = false;
-	private boolean guardandoDatos = false;
+	/* Estos datos/widgets son accesibles desde cualquier archivo. */
+	public JButton Siguiente;
+	public String pathFoto;
+	public JTextField CambioNombre, CambioApellido, CambioCiudad, CambioEdad;
+	public JComboBox <String> Sexo;
 
 	File chooserPath = new File(System.getProperty("user.home"));
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaDatos window = new VentanaDatos(null, null);
-					window.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	public VentanaDatos(String idUsuario_, Connection conexion_) {
-
-		getContentPane().setBackground(new Color(30, 144, 255));
-		idUsuario = idUsuario_;
-		conexion = conexion_;
+	public VentanaDatos(String usuario_) {
+		usuario = usuario_;
+		pathFotoDefecto = utils.posicion_archivos + "fotoDefecto.png";
+		pathFotoDefectoMujer = utils.posicion_archivos + "fotoDefectoMujer.png";
+		pathFotoDefectoHombre = utils.posicion_archivos + "fotoDefectoHombre.png";
+		pathFoto = pathFotoDefecto;
+		ponerDefecto = null;
+		FotoDePerfil = null;
+		guardandoDatos = false;
+		obteniendoFoto = false; 
+		cargandoDatos = false;
+		manejandoDatos = false;
 		initialize();
 	}
 
 	private void initialize() {
 		// Tipografías
 		Font fuente_entry = new Font("Josefin Sans", Font.PLAIN, 20);
-
 		Font fuente_titulo_20 = new Font("Raleway", Font.PLAIN, 20);
 		Font fuente_titulo_25 = new Font("Raleway", Font.PLAIN, 25);
 		Font fuente_titulo_35 = new Font("Raleway", Font.PLAIN, 35);
 
-		setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "/Saludo.png"));
-		setTitle("CatChat");
-		setBounds(100, 100, 1280, 720);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setLayout(null);
-		setResizable(false);
-		setLocationRelativeTo(null);
+		utils.Acomodar(this);
 
-		labelGatito = new JLabel("");
-		labelGatito.setIcon(new ImageIcon(posicion_archivos + "/Timido.png"));
+		JLabel labelGatito = new JLabel("");
+		labelGatito.setIcon(new ImageIcon(utils.posicion_archivos + "Timido.png"));
 		labelGatito.setBounds(135, 144, 364, 348);
 		getContentPane().add(labelGatito);
 
-		lblCompleteEstosDatos = new JLabel("Por favor, completa estos datos");
+		JLabel lblCompleteEstosDatos = new JLabel("Por favor, completa estos datos");
 		lblCompleteEstosDatos.setFont(fuente_titulo_35);
 		lblCompleteEstosDatos.setForeground(new Color(230, 230, 250));
 		lblCompleteEstosDatos.setBounds(60, 548, 537, 48);
 		getContentPane().add(lblCompleteEstosDatos);
 
-		lblNewLabel_1 = new JLabel("Pusheen quiere saber más acerca ti");
+		JLabel lblNewLabel_1 = new JLabel("Pusheen quiere saber más acerca ti");
 		lblNewLabel_1.setForeground(new Color(230, 230, 250));
 		lblNewLabel_1.setFont(fuente_titulo_35);
 		lblNewLabel_1.setBounds(28, 45, 621, 51);
 		getContentPane().add(lblNewLabel_1);
 
-		Foto = new JLabel("Foto de perfil");
+		JLabel Foto = new JLabel("Foto de perfil");
 		Foto.setForeground(Color.WHITE);
 		Foto.setFont(fuente_titulo_25);
 		Foto.setBounds(1050, 110, 162, 48);
@@ -180,7 +109,7 @@ public class VentanaDatos extends JFrame {
 				String preCambiado = pathFoto;
 				pathFoto = elegirArchivo();
 				if (pathFoto != null) {
-					FotoDePerfil.setIcon(CrearIcono(pathFoto, 150, -1, true, true));
+					FotoDePerfil.setIcon(utils.CrearIcono(pathFoto, 150, -1, true));
 					fotoDefecto.setVisible(true);
 				} else {
 					pathFoto = preCambiado;
@@ -191,25 +120,25 @@ public class VentanaDatos extends JFrame {
 		CambiarFoto.setBounds(1050, 350, 150, 35);
 		getContentPane().add(CambiarFoto);
 
-		lblNombre = new JLabel("Nombre");
+		JLabel lblNombre = new JLabel("Nombre");
 		lblNombre.setForeground(Color.WHITE);
 		lblNombre.setFont(fuente_titulo_25);
 		lblNombre.setBounds(655, 125, 110, 30);
 		getContentPane().add(lblNombre);
 
-		lblNewLabel_3 = new JLabel("Apellido");
+		JLabel lblNewLabel_3 = new JLabel("Apellido");
 		lblNewLabel_3.setFont(fuente_titulo_25);
 		lblNewLabel_3.setForeground(Color.WHITE);
 		lblNewLabel_3.setBounds(655, 195, 110, 30);
 		getContentPane().add(lblNewLabel_3);
 
-		lblEdad = new JLabel("Edad");
+		JLabel lblEdad = new JLabel("Edad");
 		lblEdad.setForeground(Color.WHITE);
 		lblEdad.setFont(fuente_titulo_25);
 		lblEdad.setBounds(655, 265, 110, 30);
 		getContentPane().add(lblEdad);
 
-		lblCiudad = new JLabel("Ciudad");
+		JLabel lblCiudad = new JLabel("Ciudad");
 		lblCiudad.setForeground(Color.WHITE);
 		lblCiudad.setFont(fuente_titulo_25);
 		lblCiudad.setBounds(655, 335, 110, 30);
@@ -223,7 +152,7 @@ public class VentanaDatos extends JFrame {
 		fotoDefecto.setBorder(BorderFactory.createEmptyBorder());
 		fotoDefecto.setBounds(1178, 182, 20, 20);
 		getContentPane().add(fotoDefecto);
-		fotoDefecto.setIcon(CrearIcono(posicion_archivos + "/ponerDefecto.png", 20, 20, true, false));
+		fotoDefecto.setIcon(utils.CrearIcono(utils.posicion_archivos + "ponerDefecto.png", 20, 20, true));
 		fotoDefecto.setContentAreaFilled(false);
 
 		ponerDefecto = new Timer(100, new ActionListener() {@Override
@@ -235,15 +164,15 @@ public class VentanaDatos extends JFrame {
 				} else {
 					pathFoto = pathFotoDefecto;
 				}
-				fotoDefecto.setIcon(CrearIcono(posicion_archivos + "/ponerDefecto.png", 20, 20, true, false));
-				FotoDePerfil.setIcon(CrearIcono(pathFoto, 150, -1, true, true));
+				fotoDefecto.setIcon(utils.CrearIcono(utils.posicion_archivos + "ponerDefecto.png", 20, 20, true));
+				FotoDePerfil.setIcon(utils.CrearIcono(pathFoto, 150, -1, true));
 				fotoDefecto.setVisible(false);
 				ponerDefecto.stop();
 			}
 		});
 		fotoDefecto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				fotoDefecto.setIcon(CrearIcono(posicion_archivos + "/ponerDefecto_.png", 20, 20, true, false));
+				fotoDefecto.setIcon(utils.CrearIcono(utils.posicion_archivos + "ponerDefecto_.png", 20, 20, true));
 				ponerDefecto.restart();
 			}
 		});
@@ -252,56 +181,41 @@ public class VentanaDatos extends JFrame {
 		FotoDePerfil.setBackground(new Color(51, 153, 255));
 		FotoDePerfil.setBounds(1050, 180, 150, 150);
 		getContentPane().add(FotoDePerfil);
-		FotoDePerfil.setIcon(CrearIcono(pathFotoDefecto, 150, -1, true, true));
-		FotoDePerfil.setBorder(new LineBorder(SystemColor.inactiveCaptionBorder, 2, true));
+		FotoDePerfil.setIcon(utils.CrearIcono(pathFotoDefecto, 150, -1, true));
+		FotoDePerfil.setBorder(new LineBorder(Color.WHITE, 2, true));
 
 		JPanel panel = new JPanel();
-		panel.setBackground(SystemColor.textHighlight);
+		panel.setBackground(new Color(30, 144, 255));
 		panel.setBounds(1050, 180, 150, 150);
 		getContentPane().add(panel);
 		panel.setLayout(null);
 
 		UIManager.put("ToolTip.background", Color.decode("#EF6161"));
-
-		iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry.png";
-
-		iconoAlertaEntry = CrearIcono(iconoAlertaEntry_path, 20, 20, true, false);
 		ToolTipManager.sharedInstance().setInitialDelay(0);
 
-		AlertaEntry1 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
+		AlertaEntry1 = utils.CrearAlertaEntry(25, 2);
+		AlertaEntry2 = utils.CrearAlertaEntry(25, 2);
+		AlertaEntry3 = utils.CrearAlertaEntry(25, 2);
+		AlertaEntry4 = utils.CrearAlertaEntry(25, 2);
+		AlertaEntry5 = utils.CrearAlertaEntry(25, 2);
+		
+		final JLabel[] alertas = new JLabel[5];
+		alertas[0] = AlertaEntry1;
+		alertas[1] = AlertaEntry2;
+		alertas[2] = AlertaEntry3;
+		alertas[3] = AlertaEntry4;
+		alertas[4] = AlertaEntry5;
 
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(25, 2);
-			}
-		};
-		AlertaEntry2 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(25, 2);
-			}
-		};
-		AlertaEntry3 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(25, 2);
-			}
-		};
-		AlertaEntry4 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(25, 2);
-			}
-		};
-		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
+		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (iconoAlertaEntry_path.endsWith("AlertaEntry.png")) {
-					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry_.png";
+				if (utils.iconoAlertaEntry_path.endsWith("AlertaEntry.png")) {
+					utils.iconoAlertaEntry_path = utils.posicion_archivos  + "AlertaEntry_.png";
 				} else {
-					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry.png";
+					utils.iconoAlertaEntry_path = utils.posicion_archivos + "AlertaEntry.png";
 				}
 
-				String iconoFinal = iconoAlertaEntry_path;
+				String iconoFinal = utils.iconoAlertaEntry_path;
 				if (cargandoDatos || guardandoDatos) {
 					String palabra;
 					if (cargandoDatos) {
@@ -309,21 +223,22 @@ public class VentanaDatos extends JFrame {
 					} else {
 						palabra = "Guardando";
 					}
-					AlertaEntry1.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry3.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
-					AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
+					
+					for (JLabel alerta: alertas) {
+						alerta.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
+					}
 
-					iconoFinal = posicion_archivos + "ajax-loader.gif";
+					iconoFinal = utils.posicion_archivos + "ajax-loader.gif";
+
 				} else {
 					AlertaEntry1.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un nombre</font></p></html>");
 					AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un apellido</font></p></html>");
 					AlertaEntry3.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una ciudad</font></p></html>");
 					AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una edad (entera)</font></p></html>");
 				}
-				iconoAlertaEntry = CrearIcono(iconoFinal, 20, 20, true, false);
-				if (ManejandoDatos) {
+
+				ImageIcon iconoAlertaEntry = utils.CrearIcono(iconoFinal, 20, 20, true);
+				if (manejandoDatos) {
 					return;
 				}
 				AlertaEntry1.setIcon(iconoAlertaEntry);
@@ -332,7 +247,7 @@ public class VentanaDatos extends JFrame {
 				AlertaEntry4.setIcon(iconoAlertaEntry);
 				AlertaEntry5.setIcon(iconoAlertaEntry);
 				if (cargandoDatos || guardandoDatos) {
-					ManejandoDatos = true;
+					manejandoDatos = true;
 				}
 			}
 		});
@@ -344,7 +259,6 @@ public class VentanaDatos extends JFrame {
 		CambioNombre.setColumns(10);
 		CambioNombre.setLayout(new BorderLayout());
 		CambioNombre.add(AlertaEntry1, BorderLayout.EAST);
-
 		CambioNombre.setDocument(new LimiteTexto(30));
 
 		CambioApellido = new JTextField();
@@ -363,26 +277,22 @@ public class VentanaDatos extends JFrame {
 		getContentPane().add(CambioCiudad);
 		CambioCiudad.setLayout(new BorderLayout());
 		CambioCiudad.add(AlertaEntry3, BorderLayout.EAST);
-
 		CambioCiudad.setDocument(new LimiteTexto(30));
 
-		lblSexo = new JLabel("Sexo");
+		JLabel lblSexo = new JLabel("Sexo");
 		lblSexo.setForeground(Color.WHITE);
 		lblSexo.setBounds(655, 390, 100, 40);
 		lblSexo.setFont(fuente_titulo_25);
 		getContentPane().add(lblSexo);
 
-		Sexo = new JComboBox < String > ();
+		Sexo = new JComboBox <String> ();
 		Sexo.setFocusable(false);
 		Sexo.setFont(fuente_entry);
-
 		Sexo.setForeground(Color.BLACK);
 		Sexo.setBackground(Color.WHITE);
-
 		Sexo.addItem("Sin especificar");
 		Sexo.addItem("Masculino");
 		Sexo.addItem("Femenino");
-
 		Sexo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String nuevoSexo = Sexo.getSelectedItem().toString();
@@ -395,7 +305,7 @@ public class VentanaDatos extends JFrame {
 					} else {
 						pathFoto = pathFotoDefecto;
 					}
-					FotoDePerfil.setIcon(CrearIcono(pathFoto, 150, -1, true, false));
+					FotoDePerfil.setIcon(utils.CrearIcono(pathFoto, 150, -1, true));
 				}
 			}
 		});
@@ -403,13 +313,6 @@ public class VentanaDatos extends JFrame {
 		Sexo.setBounds(780, 400, 200, 30);
 		getContentPane().add(Sexo);
 
-		AlertaEntry5 = new JLabel((Icon) null) {
-			private static final long serialVersionUID = 1L;
-
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(25, 2);
-			}
-		};
 		AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>Cargando datos, espere por favor</font></p></html>");
 		AlertaEntry5.setBounds(988, 405, 20, 20);
 		getContentPane().add(AlertaEntry5);
@@ -422,8 +325,8 @@ public class VentanaDatos extends JFrame {
 		CambioEdad.add(AlertaEntry4, BorderLayout.EAST);
 		CambioEdad.setDocument(new SoloEnteros(2));
 
-		labelGatito1 = new JLabel("");
-		labelGatito1.setIcon(new ImageIcon(posicion_archivos + "/Friki.png"));
+		JLabel labelGatito1 = new JLabel("");
+		labelGatito1.setIcon(new ImageIcon(utils.posicion_archivos + "Friki.png"));
 		labelGatito1.setBounds(702, 351, 436, 331);
 		getContentPane().add(labelGatito1);
 
@@ -432,14 +335,15 @@ public class VentanaDatos extends JFrame {
 		Siguiente.setBounds(1124, 636, 130, 35);
 		getContentPane().add(Siguiente);
 
-		lblFondo = new JLabel("");
+		JLabel lblFondo = new JLabel("");
 		lblFondo.setBounds(0, 0, 1280, 720);
 		getContentPane().add(lblFondo);
-		lblFondo.setIcon(new ImageIcon(posicion_archivos + "/Fondo.jpg"));
+		lblFondo.setIcon(new ImageIcon(utils.posicion_archivos + "Fondo.jpg"));
 
 		llamarAtencionAlertaEntry.start();
 
-		Timer chequearAlertas = new Timer(200, new ActionListener() {@Override
+		final Timer chequearAlertas = new Timer(200, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (CambioNombre.getText().isEmpty()) {
 					AlertaEntry1.setVisible(true);
@@ -467,10 +371,8 @@ public class VentanaDatos extends JFrame {
 			}
 		});
 
-		// Obtener datos desde la base de datos.
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
-				// Mientras cargamos datos, no se toca nada ;)
 				Siguiente.setEnabled(false);
 
 				AlertaEntry5.setVisible(true);
@@ -484,26 +386,24 @@ public class VentanaDatos extends JFrame {
 				try {
 					cargandoDatos = true;
 					ObtenerDatos();
-				} catch (NullPointerException | SQLException | IOException | BadLocationException e) {
-					System.out.println("Sin conexión a db, probando.");
+				} catch (NullPointerException | SQLException e) {
 				}
 
 				String antesLoader = pathFoto;
 				try {
 					obteniendoFoto = true;
 					FotoDePerfil.setHorizontalAlignment(SwingConstants.CENTER);
-					FotoDePerfil.setIcon(new ImageIcon(posicion_archivos + "ajax-loader.gif"));
+					FotoDePerfil.setIcon(new ImageIcon(utils.posicion_archivos + "ajax-loader.gif"));
 					ObtenerFoto();
 					antesLoader = pathFoto;
-				} catch (NullPointerException | SQLException | IOException e) {
-					System.out.println("No hay foto aún.");
+				} catch (Exception e) {
 				} finally {
 					obteniendoFoto = false;
 					cargandoDatos = false;
 				}
 
 				FotoDePerfil.setHorizontalAlignment(SwingConstants.LEADING);
-				FotoDePerfil.setIcon(CrearIcono(antesLoader, 150, -1, true, false));
+				FotoDePerfil.setIcon(utils.CrearIcono(antesLoader, 150, -1, true));
 
 				CambiarFoto.setEnabled(true);
 				CambioNombre.setEnabled(true);
@@ -512,13 +412,15 @@ public class VentanaDatos extends JFrame {
 				CambioEdad.setEnabled(true);
 				Sexo.setEnabled(true);
 
+				manejandoDatos = false;
 				chequearAlertas.start();
 				AlertaEntry5.setVisible(false);
+
 			}
 		});
 		t1.start();
 
-		todoLleno = new Timer(100, new ActionListener() {@Override
+		Timer todoLleno = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos));
@@ -530,7 +432,7 @@ public class VentanaDatos extends JFrame {
 		Siguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				guardandoDatos = true;
-				ManejandoDatos = false;
+				manejandoDatos = false;
 				chequearAlertas.stop();
 				Siguiente.setEnabled(false);
 				fotoDefecto.setVisible(false);
@@ -549,28 +451,6 @@ public class VentanaDatos extends JFrame {
 		});
 	}
 
-	public ImageIcon CrearIcono(String path, int l, int a, boolean redimensionar, boolean busy) {
-		if (busy) {
-			this.setCursor(waitCursor);
-		}
-		ImageIcon icono = new ImageIcon(path);
-		if (redimensionar) {
-			int escalado = Image.SCALE_SMOOTH;
-			if (path.endsWith(".gif")) {
-				escalado = Image.SCALE_FAST;
-			}
-			Image img = icono.getImage();
-			Image newimg = img.getScaledInstance(l, a, escalado);
-			ImageIcon new_icono = new ImageIcon(newimg);
-			this.setCursor(defaultCursor);
-			return new_icono;
-
-		} else {
-			this.setCursor(defaultCursor);
-			return icono;
-		}
-	}
-
 	private String elegirArchivo() {
 		JFileChooser chooser = new JFileChooser();
 		PanelPrevisualizacion preview = new PanelPrevisualizacion(chooser);
@@ -586,9 +466,9 @@ public class VentanaDatos extends JFrame {
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setAccessory(preview);
 		chooser.addPropertyChangeListener(preview);
-		this.setCursor(waitCursor);
+		this.setCursor(utils.waitCursor);
 		int resultado = chooser.showOpenDialog(null);
-		this.setCursor(defaultCursor);
+		this.setCursor(utils.defaultCursor);
 		if (resultado == JFileChooser.APPROVE_OPTION) {
 			chooserPath = chooser.getCurrentDirectory();
 			File archivoSeleccionado = chooser.getSelectedFile();
@@ -599,51 +479,38 @@ public class VentanaDatos extends JFrame {
 		}
 	}
 
-	public void ObtenerFoto() throws SQLException, IOException, NullPointerException {
-		String sentencia = "select foto,extImagen from usuario where usuario='" + idUsuario + "';";
-		Statement stmt_foto = conexion.createStatement();
-		ResultSet rs = stmt_foto.executeQuery(sentencia);
+	public void ObtenerFoto() {
+		String path = "?";
+		try {
+			path = utils.ObtenerFoto(usuario);
+		} catch (NullPointerException | SQLException | IOException e) {
+		}
 
-		rs.next();
-		String extImage = rs.getString(2);
-
-		if (extImage.equals("__base_defecto__")) {
+		if (path.equals("?")) {
 			return;
 		}
 
-		Blob datosFoto = rs.getBlob(1);
-
-		File temp = File.createTempFile("tempfile", extImage);
-		System.out.println(temp.getAbsolutePath());
-		InputStream is = datosFoto.getBinaryStream();
-		fos = new FileOutputStream(temp);
-		int b = 0;
-		while ((b = is.read()) != -1) {
-			fos.write(b);
-		}
-
-		// Las paths por defectos ahora son la foto del usuario.
-		pathFoto = temp.getAbsolutePath();
-		pathFotoDefecto = temp.getAbsolutePath();
-		pathFotoDefectoHombre = temp.getAbsolutePath();
-		pathFotoDefectoMujer = temp.getAbsolutePath();
-		FotoDePerfil.setIcon(CrearIcono(temp.getAbsolutePath(), 150, -1, true, true));
+		pathFoto = path;
+		pathFotoDefecto = path;
+		pathFotoDefectoHombre = path;
+		pathFotoDefectoMujer = path;
+		FotoDePerfil.setIcon(utils.CrearIcono(path, 150, -1, true));
 	}
 
-	public void ObtenerDatos() throws SQLException, IOException, NullPointerException, BadLocationException {
-		String sentencia = "select Nombre,Apellido,Edad,Ciudad,Sexo from usuario where usuario='" + idUsuario + "';";
-		Statement stmt_datos = conexion.createStatement();
-		ResultSet rs = stmt_datos.executeQuery(sentencia);
-		rs.next();
-
-		String nombre = rs.getString(1);
-		String apellido = rs.getString(2);
-		int edad = rs.getInt(3);
-		String ciudad = rs.getString(4);
-		String sexo = rs.getString(5);
+	public void ObtenerDatos() throws SQLException { 
+		Object[] datos = utils.ObtenerDatosEdicion(usuario);
+		
+		String nombre = (String) datos[0];
+		String apellido = (String) datos[1];
+		int edad = (int) datos[2];
+		String ciudad = (String) datos[3];
+		String sexo = (String) datos[4];
 
 		if (!nombre.equals("__base_defecto__")) {
-			CambioNombre.getDocument().insertString(0, nombre, null);
+			try {
+				CambioNombre.getDocument().insertString(0, nombre, null);
+			} catch (BadLocationException e) {
+			}
 		}
 
 		if (!apellido.equals("__base_defecto__")) {

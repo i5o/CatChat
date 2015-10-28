@@ -33,10 +33,7 @@ public class VentanaLogin extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private JLabel lblCatchat, lblanNoTienes, lblyaEstsRegistrado, lblNewLabel_2, lblNewLabel_3;
-	private String posicion_archivos = new File("archivos/").getAbsolutePath().replace("\\", "/") + "/";
-
-	public JLabel lblNewLabel, datosIncorrectos;
+	public JLabel lblNewLabel, datosIncorrectos, EmailEnUso, UsuarioEnUso;
 	public JButton Entrar, Registrarse;
 	public JTextField EntrarUsuario, EntrarPassword, nuevoEmail, nuevoUsuario, nuevoPassword;
 
@@ -46,25 +43,7 @@ public class VentanaLogin extends JFrame {
 
 	DocumentListener chequearTexto;
 
-	public JLabel EmailEnUso, UsuarioEnUso;
-
 	Color colorLabel = Color.decode("#EF6161");
-
-	public Timer llamarAtencionAlertaEntry, datosEntradaLlenos, datosRegistroLlenos, llamarAtencionInfo;
-
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaLogin window = new VentanaLogin();
-					window.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 
 	public VentanaLogin() {
 		initialize();
@@ -80,7 +59,7 @@ public class VentanaLogin extends JFrame {
 
 
 		getContentPane().setBackground(SystemColor.activeCaption);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(posicion_archivos + "/Saludo.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(utils.posicion_archivos + "Saludo.png"));
 		setTitle("CatChat");
 		setBounds(100, 100, 1280, 720);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -90,45 +69,21 @@ public class VentanaLogin extends JFrame {
 
 		lblNewLabel = new JLabel("");
 		lblNewLabel.setBounds(138, 211, 313, 415);
-		lblNewLabel.setIcon(new ImageIcon(posicion_archivos + "Saludo.png"));
+		lblNewLabel.setIcon(new ImageIcon(utils.posicion_archivos + "Saludo.png"));
 		getContentPane().add(lblNewLabel);
 
-		iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry.png";
-		iconoAlertaEntry = CrearIcono(iconoAlertaEntry_path, 20, 20, true);
+		iconoAlertaEntry_path = utils.posicion_archivos + "AlertaEntry.png";
+		iconoAlertaEntry = utils.CrearIcono(iconoAlertaEntry_path, 20, 20, true);
 
 		UIManager.put("ToolTip.background", Color.decode("#EF6161"));
 		ToolTipManager.sharedInstance().setInitialDelay(0);
 
-		AlertaEntry1 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(25, 2);
-			}
-		};
-		AlertaEntry2 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(25, 2);
-			}
-		};
-		AlertaEntry3 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(-50, 30);
-			}
-		};
-		AlertaEntry4 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(-50, 30);
-			}
-		};
-		AlertaEntry5 = new JLabel(iconoAlertaEntry) {
-			private static final long serialVersionUID = 1L;
-			public Point getToolTipLocation(MouseEvent e) {
-				return new Point(-100, 30);
-			}
-		};
+		
+		AlertaEntry1 = utils.CrearAlertaEntry(25, 2);
+		AlertaEntry2 = utils.CrearAlertaEntry(25, 2);
+		AlertaEntry3 = utils.CrearAlertaEntry(-50, 30);
+		AlertaEntry4 = utils.CrearAlertaEntry(-50, 30);
+		AlertaEntry5 = utils.CrearAlertaEntry(-100, 30);
 
 		AlertaEntry1.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un usuario</font></p></html>");
 		AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una contraseña</font></p></html>");
@@ -136,14 +91,14 @@ public class VentanaLogin extends JFrame {
 		AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una contraseña</font></p></html>");
 		AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un correo electrónico</font></p></html>");
 
-		llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
+		Timer llamarAtencionAlertaEntry = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				if (iconoAlertaEntry_path.endsWith("AlertaEntry.png")) {
-					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry_.png";
+					iconoAlertaEntry_path = utils.posicion_archivos + "AlertaEntry_.png";
 				} else {
-					iconoAlertaEntry_path = posicion_archivos + "/AlertaEntry.png";
+					iconoAlertaEntry_path = utils.posicion_archivos + "AlertaEntry.png";
 				}
-				iconoAlertaEntry = CrearIcono(iconoAlertaEntry_path, 20, 20, true);
+				iconoAlertaEntry = utils.CrearIcono(iconoAlertaEntry_path, 20, 20, true);
 				AlertaEntry1.setIcon(iconoAlertaEntry);
 				AlertaEntry2.setIcon(iconoAlertaEntry);
 				AlertaEntry3.setIcon(iconoAlertaEntry);
@@ -152,7 +107,7 @@ public class VentanaLogin extends JFrame {
 			}
 		});
 
-		llamarAtencionInfo = new Timer(500, new ActionListener() {@Override
+		Timer llamarAtencionInfo = new Timer(500, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				int rojo = colorLabel.getRed();
 				if (rojo == 239) {
@@ -257,14 +212,14 @@ public class VentanaLogin extends JFrame {
 		getContentPane().add(Entrar);
 
 		//Etiqueta bienvenida
-		lblCatchat = new JLabel("¡Bienvenido a CatChat!");
+		JLabel lblCatchat = new JLabel("¡Bienvenido a CatChat!");
 		lblCatchat.setBounds(20, 50, 605, 95);
 		lblCatchat.setFont(fuente_titulo_55);
 		lblCatchat.setForeground(new Color(230, 230, 250));
 		getContentPane().add(lblCatchat);
 
 		//Etiqueta registrarse
-		lblanNoTienes = new JLabel("¿Aún no tienes una cuenta? ¡Regístrate!");
+		JLabel lblanNoTienes = new JLabel("¿Aún no tienes una cuenta? ¡Regístrate!");
 		lblanNoTienes.setBounds(675, 275, 690, 40);
 		lblanNoTienes.setFont(fuente_titulo_30);
 		lblanNoTienes.setForeground(new Color(255, 255, 255));
@@ -344,7 +299,7 @@ public class VentanaLogin extends JFrame {
 		Registrarse.setBackground(new Color(230, 230, 250));
 		getContentPane().add(Registrarse);
 
-		lblyaEstsRegistrado = new JLabel("¿Ya estás registrado? ¡Ingresa!");
+		JLabel lblyaEstsRegistrado = new JLabel("¿Ya estás registrado? ¡Ingresa!");
 		lblyaEstsRegistrado.setForeground(Color.WHITE);
 		lblyaEstsRegistrado.setFont(fuente_titulo_30);
 		lblyaEstsRegistrado.setBounds(664, 11, 422, 40);
@@ -352,12 +307,12 @@ public class VentanaLogin extends JFrame {
 
 
 		JLabel lblNewLabel_1 = new JLabel();
-		lblNewLabel_1.setIcon(new ImageIcon(posicion_archivos + "Sir.png"));
+		lblNewLabel_1.setIcon(new ImageIcon(utils.posicion_archivos + "Sir.png"));
 		lblNewLabel_1.setBounds(622, 62, 171, 184);
 		getContentPane().add(lblNewLabel_1);
 
-		lblNewLabel_2 = new JLabel();
-		lblNewLabel_2.setIcon(new ImageIcon(posicion_archivos + "Pintando.png"));
+		JLabel lblNewLabel_2 = new JLabel();
+		lblNewLabel_2.setIcon(new ImageIcon(utils.posicion_archivos + "Pintando.png"));
 		lblNewLabel_2.setBounds(956, 449, 318, 259);
 		getContentPane().add(lblNewLabel_2);
 
@@ -384,12 +339,12 @@ public class VentanaLogin extends JFrame {
 		getContentPane().add(EmailEnUso);
 
 
-		lblNewLabel_3 = new JLabel();
-		lblNewLabel_3.setIcon(new ImageIcon(posicion_archivos + "Fondo.jpg"));
+		JLabel lblNewLabel_3 = new JLabel();
+		lblNewLabel_3.setIcon(new ImageIcon(utils.posicion_archivos + "Fondo.jpg"));
 		lblNewLabel_3.setBounds(0, 0, 1280, 720);
 		getContentPane().add(lblNewLabel_3);
 
-		datosEntradaLlenos = new Timer(100, new ActionListener() {@Override
+		Timer datosEntradaLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry1.isVisible() && !AlertaEntry2.isVisible());
@@ -403,7 +358,7 @@ public class VentanaLogin extends JFrame {
 		});
 
 
-		datosRegistroLlenos = new Timer(100, new ActionListener() {@Override
+		Timer datosRegistroLlenos = new Timer(100, new ActionListener() {@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean completo = false;
 				completo = (!AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && !AlertaEntry5.isVisible());
@@ -421,19 +376,5 @@ public class VentanaLogin extends JFrame {
 		datosRegistroLlenos.start();
 		llamarAtencionInfo.start();
 
-	}
-	public ImageIcon CrearIcono(String path, int l, int a, boolean redimensionar) {
-
-		ImageIcon icono = new ImageIcon(path);
-		if (redimensionar) {
-			Image img = icono.getImage();
-			Image newimg = img.getScaledInstance(l, a, java.awt.Image.SCALE_SMOOTH);
-			ImageIcon new_icono = new ImageIcon(newimg);
-			return new_icono;
-
-		} else {
-
-			return icono;
-		}
 	}
 }

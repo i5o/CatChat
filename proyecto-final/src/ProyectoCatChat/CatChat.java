@@ -1,6 +1,5 @@
 package ProyectoCatChat;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,7 +17,6 @@ import java.sql.Statement;
 
 public class CatChat {
 
-	static Statement stmt = null;
 	static String posicion_archivos = new File("archivos/").getAbsolutePath() + "\\";
 	static Connection conexion = null;
 
@@ -26,10 +24,6 @@ public class CatChat {
 	static VentanaDatos ventanaDatos;
 	static VentanaMensajes ventanaMensajes;
 	static String Usuario;
-
-	static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
-	static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-	static Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
 	public static void main(String[] args) {
 
@@ -39,6 +33,9 @@ public class CatChat {
 			System.out.println("Imposible conectar a la base de datos.\nSi no hay conexión, no hay programa :/");
 			System.exit(0);
 		}
+		
+		utils.conexion = conexion;
+
 		ventanaLogin = new VentanaLogin();
 		ventanaLogin.setVisible(true);
 
@@ -180,26 +177,21 @@ public class CatChat {
 	}
 
 	public static boolean consultaVacia(ResultSet rs) throws SQLException {
-		// Devuelve True si la consulta hecha no tiene campos
 		return (!rs.isBeforeFirst() && rs.getRow() == 0);
 	}
 
 	public static void llamarVentanaDatos() {
-		ventanaLogin.llamarAtencionAlertaEntry.stop();
-		ventanaLogin.datosEntradaLlenos.stop();
-		ventanaLogin.datosRegistroLlenos.stop();
-		ventanaLogin.llamarAtencionInfo.stop();
 		ventanaLogin.setVisible(false);
-		VentanaDatos ventanaDatos = new VentanaDatos(Usuario, conexion);
+
+		final VentanaDatos ventanaDatos = new VentanaDatos(Usuario);
 		ventanaDatos.setVisible(true);
 
-		VentanaDatos.Siguiente.addActionListener(new ActionListener() {
+		ventanaDatos.Siguiente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Thread t1 = new Thread(new Runnable() {
 					public void run() {
 						try {
 							GuardarDatos(ventanaDatos);
-							ventanaDatos.todoLleno.stop();
 							ventanaDatos.dispose();
 							llamarVentanaMensajes();
 						} catch (SQLException | IOException e) {
@@ -213,17 +205,10 @@ public class CatChat {
 
 	public static void llamarVentanaMensajes() {
 		ventanaLogin.setVisible(false);
-		ventanaMensajes = new VentanaMensajes(Usuario, conexion);
+		ventanaMensajes = new VentanaMensajes(Usuario);
 		ventanaMensajes.setVisible(true);
 
-		ventanaMensajes.btnEditarDatos.addMouseListener(new MouseAdapter() {@Override
-			public void mouseEntered(MouseEvent e) {
-				ventanaMensajes.setCursor(handCursor);
-			}@Override
-			public void mouseExited(MouseEvent e) {
-				ventanaMensajes.setCursor(defaultCursor);
-			}
-
+		ventanaMensajes.btnEditarDatos.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				llamarVentanaDatos();
