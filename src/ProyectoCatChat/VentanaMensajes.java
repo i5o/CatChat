@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -135,7 +136,8 @@ public class VentanaMensajes extends JFrame {
         panelUsoChat = new JPanel();
         panelUsoChat.setBackground(new Color(0, 0, 0, 0));
         panelUsoChat.setLayout(null);
-        JLabel lblUsoChat = new JLabel(
+        JLabel lblUsoChat =
+            new JLabel(
                 "<html><center>Para comenzar a chatear, seleccione un usuario clickeando el icono (el icono es el que está actualmente en el fondo) que aparece al costado de su información.<br>\r\n</center>");
         lblUsoChat.setForeground(new Color(0, 0, 255));
         lblUsoChat.setFont(new Font("Raleway", Font.BOLD, 27));
@@ -494,7 +496,7 @@ public class VentanaMensajes extends JFrame {
         mensaje.setSize(50, 70);
         mensaje.setLocation(21, 0);
         mensaje.setBackground(Color.WHITE);
-        mensaje.setFont(new Font("Josefin Sans", Font.PLAIN, 15));
+        mensaje.setFont(new Font("Josefin Sans", Font.PLAIN, 18));
         mensaje.setEditable(false);
         mensaje.setLineWrap(true);
 
@@ -570,6 +572,7 @@ public class VentanaMensajes extends JFrame {
         panelEnvio.add(scrollPane);
 
         final JTextArea Mensaje = new JTextArea();
+        Mensaje.setFont(new Font("Josefin Sans", Font.BOLD, 15));
         Placeholder Mensaje_pl = new Placeholder("Escriba el mensaje a enviar", Mensaje, true);
         Mensaje_pl.changeAlpha(0.4f);
         Mensaje.setLineWrap(true);
@@ -621,7 +624,8 @@ public class VentanaMensajes extends JFrame {
 
     public void EnviarMensaje(String mensaje, String fecha) {
         chequearMensajes.stop();
-        String[] a = { usuario, mensaje, fecha };
+        long numeroAleatorio = new Random().nextLong();
+        String[] a = { usuario, mensaje, fecha, String.valueOf(numeroAleatorio) };
         mensajes_json.put(a);
         mensajes_json = new JSONObject(mensajes.toString()).getJSONArray("Mensajes");
 

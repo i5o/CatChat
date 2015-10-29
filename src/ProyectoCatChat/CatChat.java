@@ -30,9 +30,9 @@ public class CatChat {
     }
 
     public static void EstablecerConexionMySql() throws SQLException {
+        String url = "jdbc:mysql://kuckuck.treehouse.su:3306/proyecto?user=ignacioutu&password=ProyectoDeUTU2015";
         // String url =
-        // "jdbc:mysql://kuckuck.treehouse.su:3306/proyecto?user=ignacioutu&password=ProyectoDeUTU2015";
-        String url = "jdbc:mysql://192.168.2.158:3306/proyecto?user=estudiante04&password=Estudiante04";
+        // "jdbc:mysql://192.168.2.158:3306/proyecto?user=estudiante04&password=Estudiante04";
 
         System.out.println("Intentando conectar.");
         conexion = DriverManager.getConnection(url);

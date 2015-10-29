@@ -150,12 +150,13 @@ public class VentanaDatos extends JFrame {
                 if (Sexo.getSelectedItem().toString() == "Femenino") {
                     pathFoto = pathFotoDefectoMujer;
                 }
-                else if (Sexo.getSelectedItem().toString() == "Masculino") {
-                    pathFoto = pathFotoDefectoHombre;
-                }
-                else {
-                    pathFoto = pathFotoDefecto;
-                }
+                else
+                    if (Sexo.getSelectedItem().toString() == "Masculino") {
+                        pathFoto = pathFotoDefectoHombre;
+                    }
+                    else {
+                        pathFoto = pathFotoDefecto;
+                    }
                 fotoDefecto.setIcon(utils.CrearIcono(utils.posicion_archivos + "ponerDefecto.png", 20, 20, true));
                 FotoDePerfil.setIcon(utils.CrearIcono(pathFoto, 150, -1, true));
                 fotoDefecto.setVisible(false);
@@ -215,22 +216,17 @@ public class VentanaDatos extends JFrame {
                     }
 
                     for (JLabel alerta : alertas) {
-                        alerta.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra
-                                + " datos, espere por favor</font></p></html>");
+                        alerta.setToolTipText("<html><p><font size='4' face='Raleway'>" + palabra + " datos, espere por favor</font></p></html>");
                     }
 
                     iconoFinal = utils.posicion_archivos + "ajax-loader.gif";
 
                 }
                 else {
-                    AlertaEntry1.setToolTipText(
-                            "<html><p><font size='4' face='Raleway'>Ingrese un nombre</font></p></html>");
-                    AlertaEntry2.setToolTipText(
-                            "<html><p><font size='4' face='Raleway'>Ingrese un apellido</font></p></html>");
-                    AlertaEntry3.setToolTipText(
-                            "<html><p><font size='4' face='Raleway'>Ingrese una ciudad</font></p></html>");
-                    AlertaEntry4.setToolTipText(
-                            "<html><p><font size='4' face='Raleway'>Ingrese una edad (entera)</font></p></html>");
+                    AlertaEntry1.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un nombre</font></p></html>");
+                    AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un apellido</font></p></html>");
+                    AlertaEntry3.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una ciudad</font></p></html>");
+                    AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una edad (entera)</font></p></html>");
                 }
 
                 ImageIcon iconoAlertaEntry = utils.CrearIcono(iconoFinal, 20, 20, true);
@@ -291,18 +287,18 @@ public class VentanaDatos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String nuevoSexo = Sexo.getSelectedItem().toString();
-                boolean imagenCambiada = pathFoto != pathFotoDefecto && pathFoto != pathFotoDefectoHombre
-                        && pathFoto != pathFotoDefectoMujer;
+                boolean imagenCambiada = pathFoto != pathFotoDefecto && pathFoto != pathFotoDefectoHombre && pathFoto != pathFotoDefectoMujer;
                 if (!imagenCambiada) {
                     if (nuevoSexo == "Femenino") {
                         pathFoto = pathFotoDefectoMujer;
                     }
-                    else if (nuevoSexo == "Masculino") {
-                        pathFoto = pathFotoDefectoHombre;
-                    }
-                    else {
-                        pathFoto = pathFotoDefecto;
-                    }
+                    else
+                        if (nuevoSexo == "Masculino") {
+                            pathFoto = pathFotoDefectoHombre;
+                        }
+                        else {
+                            pathFoto = pathFotoDefecto;
+                        }
                     FotoDePerfil.setIcon(utils.CrearIcono(pathFoto, 150, -1, true));
                 }
             }
@@ -311,8 +307,7 @@ public class VentanaDatos extends JFrame {
         Sexo.setBounds(780, 400, 200, 30);
         getContentPane().add(Sexo);
 
-        AlertaEntry5.setToolTipText(
-                "<html><p><font size='4' face='Raleway'>Cargando datos, espere por favor</font></p></html>");
+        AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>Cargando datos, espere por favor</font></p></html>");
         AlertaEntry5.setBounds(988, 405, 20, 20);
         getContentPane().add(AlertaEntry5);
 
@@ -431,8 +426,7 @@ public class VentanaDatos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean completo = false;
-                completo = !AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible()
-                        && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos);
+                completo = !AlertaEntry1.isVisible() && !AlertaEntry2.isVisible() && !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && (!obteniendoFoto || !cargandoDatos);
                 Siguiente.setEnabled(completo);
             }
         });

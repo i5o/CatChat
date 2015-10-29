@@ -78,8 +78,7 @@ public class VentanaLogin extends JFrame {
         AlertaEntry2.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una contraseña</font></p></html>");
         AlertaEntry3.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un usuario</font></p></html>");
         AlertaEntry4.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese una contraseña</font></p></html>");
-        AlertaEntry5.setToolTipText(
-                "<html><p><font size='4' face='Raleway'>Ingrese un correo electrónico</font></p></html>");
+        AlertaEntry5.setToolTipText("<html><p><font size='4' face='Raleway'>Ingrese un correo electrónico</font></p></html>");
 
         final JLabel[] alertas = { AlertaEntry1, AlertaEntry2, AlertaEntry3, AlertaEntry4, AlertaEntry5 };
 
@@ -355,8 +354,7 @@ public class VentanaLogin extends JFrame {
                 completo = !AlertaEntry1.isVisible() && !AlertaEntry2.isVisible();
                 Entrar.setEnabled(completo);
                 if (!completo) {
-                    Entrar.setToolTipText(
-                            "<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para iniciar sesión</center></html>");
+                    Entrar.setToolTipText("<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para iniciar sesión</center></html>");
                 }
                 else {
                     Entrar.setToolTipText(null);
@@ -371,8 +369,7 @@ public class VentanaLogin extends JFrame {
                 completo = !AlertaEntry3.isVisible() && !AlertaEntry4.isVisible() && !AlertaEntry5.isVisible();
                 Registrarse.setEnabled(completo);
                 if (!completo) {
-                    Registrarse.setToolTipText(
-                            "<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para registrarse</center></html>");
+                    Registrarse.setToolTipText("<html><center style='font-family: Raleway; font-size: 11px; color: black;'>Ingrese los datos requeridos<br>para registrarse</center></html>");
                 }
                 else {
                     Registrarse.setToolTipText(null);
