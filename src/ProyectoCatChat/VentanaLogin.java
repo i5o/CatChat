@@ -48,14 +48,7 @@ public class VentanaLogin extends JFrame {
         Font fuente_titulo_30 = new Font("Raleway", Font.PLAIN, 30);
         Font fuente_titulo_55 = new Font("Raleway", Font.PLAIN, 55);
 
-        getContentPane().setBackground(SystemColor.activeCaption);
-        setIconImage(Toolkit.getDefaultToolkit().getImage(utils.posicion_archivos + "Saludo.png"));
-        setTitle("CatChat");
-        setBounds(100, 100, 1280, 720);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        getContentPane().setLayout(null);
-        setResizable(false);
-        setLocationRelativeTo(null);
+        utils.Acomodar(this);
 
         lblNewLabel = new JLabel("");
         lblNewLabel.setBounds(138, 211, 313, 415);
