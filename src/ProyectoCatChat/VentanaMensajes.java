@@ -65,6 +65,7 @@ public class VentanaMensajes extends JFrame {
     private JPanel panelCargandoMensajes;
     private JPanel panelUsoChat;
     private JLabel lblCargandoMensajes;
+    private JLabel lblIconoCargandoChat;
 
     private JScrollPane scrollMensajes;
     private Timer chequearMensajes;
@@ -164,7 +165,7 @@ public class VentanaMensajes extends JFrame {
         lblCargandoMensajes.setBounds(220, 280, 538, 243);
         panelCargandoMensajes.add(lblCargandoMensajes);
 
-        JLabel lblIconoCargandoChat = new JLabel();
+        lblIconoCargandoChat = new JLabel();
         lblIconoCargandoChat.setBounds(165, 11, 649, 668);
         lblIconoCargandoChat.setIcon(new ImageIcon(utils.posicion_archivos + "CargandoMensajes.gif"));
         panelCargandoMensajes.add(lblIconoCargandoChat);
@@ -205,7 +206,6 @@ public class VentanaMensajes extends JFrame {
                     }
                 }
                 catch (SQLException e) {
-                    e.printStackTrace();
                 }
             }
         });
@@ -416,14 +416,20 @@ public class VentanaMensajes extends JFrame {
 
     public void AgregarUsuarios() throws SQLException {
         ArrayList<String> usuarios = utils.ObtenerUsuarios();
-        for (int x = 0; x < usuarios.size(); x++) {
-            final String nombreUsuario = usuarios.get(x);
+        int cantidadUsuarios;
+        for (cantidadUsuarios = 0; cantidadUsuarios < usuarios.size(); cantidadUsuarios++) {
+            final String nombreUsuario = usuarios.get(cantidadUsuarios);
             if (nombreUsuario.equals(usuario)) {
                 continue;
             }
             AgregarUsuario(nombreUsuario);
             panelUsuarios.revalidate();
             panelUsuarios.repaint();
+        }
+
+        if (cantidadUsuarios == 1) {
+            lblCargandoMensajes.setText("");
+            lblIconoCargandoChat.setIcon(new ImageIcon(utils.posicion_archivos + "soloTu.png"));
         }
     }
 
